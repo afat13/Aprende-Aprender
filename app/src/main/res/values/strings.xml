@@ -1,3 +1,16 @@
 <resources>
     <string name="app_name">Aprende Aprender</string>
+    <string name="home_greeting">Hola %1$s</string>
+    <string name="home_subtitle">Tienes %1$d tareas en curso y %2$d vencidas</string>
+    <string name="home_stat_completed">Realizadas</string>
+    <string name="home_stat_in_progress">En curso</string>
+    <string name="home_stat_today">Hoy</string>
+    <string name="home_view_subjects">Ver mis materias</string>
+    <string name="home_view_tasks_today">Ver mis tareas de hoy</string>
+    <string name="home_enroll_subject">Inscribir Materia</string>
+    <string name="nav_home">Inicio</string>
+    <string name="nav_subjects">Materias</string>
+    <string name="nav_tasks">Tareas</string>
+    <string name="nav_challenges">Retos</string>
+    <string name="nav_profile">Perfil</string>
 </resources>
