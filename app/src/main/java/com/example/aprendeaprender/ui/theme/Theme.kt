@@ -22,6 +22,7 @@ private val LightColorScheme = lightColorScheme(
     secondary = PurpleGrey40,
     tertiary = Pink40
 
+
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
@@ -32,7 +33,11 @@ private val LightColorScheme = lightColorScheme(
     onSurface = Color(0xFF1C1B1F),
     */
 )
-
+private val LightColors = lightColorScheme(
+    primary = AzulPrimario,
+    background = BlancodeFondo,
+    onBackground = TextoNegro
+)
 @Composable
 fun AprendeAprenderTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
