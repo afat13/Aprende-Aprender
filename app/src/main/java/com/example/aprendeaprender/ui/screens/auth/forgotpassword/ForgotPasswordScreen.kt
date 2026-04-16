@@ -1,4 +1,4 @@
-package com.example.aprendeaprender.ui.screens.auth.login
+package com.example.aprendeaprender.ui.screens.auth.forgotpassword
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -18,7 +18,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aprendeaprender.R
@@ -32,16 +31,14 @@ import com.example.aprendeaprender.ui.theme.TextGray
 import com.example.aprendeaprender.ui.theme.TextWhite
 
 @Composable
-fun LoginScreen(
+fun ForgotPasswordScreen(
     email: String,
-    password: String,
     isLoading: Boolean,
     errorResId: Int?,
+    successResId: Int?,
     onEmailChange: (String) -> Unit,
-    onPasswordChange: (String) -> Unit,
-    onLoginClick: () -> Unit,
-    onForgotPasswordClick: () -> Unit,
-    onRegisterClick: () -> Unit
+    onSendLinkClick: () -> Unit,
+    onBackToLoginClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -60,7 +57,7 @@ fun LoginScreen(
 
         Column(horizontalAlignment = Alignment.Start) {
             Text(
-                text = stringResource(id = R.string.login_title),
+                text = stringResource(id = R.string.forgot_password_title),
                 color = TextWhite,
                 fontSize = 30.sp,
                 fontWeight = FontWeight.SemiBold
@@ -69,9 +66,18 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(8.dp))
 
             Text(
-                text = stringResource(id = R.string.login_subtitle),
+                text = stringResource(id = R.string.forgot_password_subtitle),
                 color = TextGray,
                 fontSize = 14.sp
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Text(
+                text = stringResource(id = R.string.forgot_password_description),
+                color = TextWhite,
+                fontSize = 14.sp,
+                lineHeight = 20.sp
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -83,21 +89,20 @@ fun LoginScreen(
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AppTextField(
-                value = password,
-                label = stringResource(id = R.string.password_label),
-                onValueChange = onPasswordChange,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                visualTransformation = PasswordVisualTransformation()
-            )
-
             errorResId?.let { resId ->
                 Spacer(modifier = Modifier.height(10.dp))
                 Text(
                     text = stringResource(id = resId),
                     color = ErrorRed,
+                    fontSize = 13.sp
+                )
+            }
+
+            successResId?.let { resId ->
+                Spacer(modifier = Modifier.height(10.dp))
+                Text(
+                    text = stringResource(id = resId),
+                    color = CyanAccent,
                     fontSize = 13.sp
                 )
             }
@@ -108,41 +113,21 @@ fun LoginScreen(
                 text = if (isLoading) {
                     stringResource(id = R.string.common_loading)
                 } else {
-                    stringResource(id = R.string.login_button)
+                    stringResource(id = R.string.send_link_button)
                 },
-                onClick = onLoginClick,
+                onClick = onSendLinkClick,
                 enabled = !isLoading
             )
 
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(10.dp))
 
             TextButton(
-                onClick = onForgotPasswordClick,
+                onClick = onBackToLoginClick,
                 enabled = !isLoading,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
                 Text(
-                    text = stringResource(id = R.string.forgot_password_link),
-                    color = CyanAccent
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(id = R.string.login_no_account),
-                color = TextGray,
-                fontSize = 14.sp,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-
-            TextButton(
-                onClick = onRegisterClick,
-                enabled = !isLoading,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            ) {
-                Text(
-                    text = stringResource(id = R.string.register_link),
+                    text = stringResource(id = R.string.back_to_login),
                     color = CyanAccent
                 )
             }

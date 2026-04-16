@@ -1,0 +1,69 @@
+package com.example.aprendeaprender.data.repository
+
+import com.example.aprendeaprender.data.model.UserProfile
+import com.example.aprendeaprender.data.remote.FirebaseAuthService
+import com.example.aprendeaprender.data.remote.FirestoreUserService
+
+sealed class RegisterResult {
+    data object SuccessEmailSent : RegisterResult()
+    data object SuccessEmailPending : RegisterResult()
+}
+
+class AuthRepository(
+    private val authService: FirebaseAuthService,
+    private val firestoreUserService: FirestoreUserService
+) {
+
+    fun hasActiveSession(): Boolean {
+        return authService.currentUser() != null
+    }
+
+    fun isCurrentUserVerified(): Boolean {
+        return authService.currentUser()?.isEmailVerified == true
+    }
+
+    fun currentUserEmail(): String {
+        return authService.currentUser()?.email.orEmpty()
+    }
+
+    suspend fun login(email: String, password: String): Boolean {
+        val user = authService.signIn(email, password)
+        return user.isEmailVerified
+    }
+
+    suspend fun register(email: String, password: String): RegisterResult {
+        val user = authService.register(email, password)
+
+        firestoreUserService.createUserProfile(
+            UserProfile(
+                uid = user.uid,
+                email = user.email.orEmpty()
+            )
+        )
+
+        return try {
+            authService.sendEmailVerification(user)
+            RegisterResult.SuccessEmailSent
+        } catch (e: Exception) {
+            RegisterResult.SuccessEmailPending
+        }
+    }
+
+    suspend fun sendPasswordResetEmail(email: String) {
+        authService.sendPasswordResetEmail(email)
+    }
+
+    suspend fun resendEmailVerification() {
+        val user = authService.currentUser()
+            ?: throw IllegalStateException("No hay usuario autenticado.")
+        authService.sendEmailVerification(user)
+    }
+
+    suspend fun reloadCurrentUser() {
+        authService.reloadCurrentUser()
+    }
+
+    fun signOut() {
+        authService.signOut()
+    }
+}
