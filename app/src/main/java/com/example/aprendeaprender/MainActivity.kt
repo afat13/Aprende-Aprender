@@ -29,7 +29,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun NavegacionInterna() {
     val PantallaActual = rememberNavController()
@@ -64,10 +64,11 @@ fun NavegacionInterna() {
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
+//@Preview(showBackground = true)
+//@Composable
+/*fun GreetingPreview() {
     AprendeAprenderTheme {
         Greeting("Android")
     }
-}
+}*/
+

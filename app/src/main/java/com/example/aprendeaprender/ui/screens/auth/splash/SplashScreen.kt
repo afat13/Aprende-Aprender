@@ -25,6 +25,8 @@ import androidx.compose.ui.unit.sp
 import com.example.aprendeaprender.R
 import kotlinx.coroutines.delay
 import androidx.compose.ui.res.stringResource
+import com.example.aprendeaprender.ui.theme.BlueDark
+
 @Composable
 fun SplashScreen(
     onNavegarAlLogin: () -> Unit, // si no existe una sesion previa me lleva a login
@@ -42,7 +44,7 @@ fun SplashScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background),
+            .background(BlueDark),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -70,3 +72,4 @@ fun SplashScreen(
         )
     }
 }
+

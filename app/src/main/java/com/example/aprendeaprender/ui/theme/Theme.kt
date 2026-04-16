@@ -12,9 +12,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+    primary = AzulPrimario,
+    secondary = BlueDark,
+    tertiary = TextoNegro
+
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -32,11 +33,6 @@ private val LightColorScheme = lightColorScheme(
     onBackground = Color(0xFF1C1B1F),
     onSurface = Color(0xFF1C1B1F),
     */
-)
-private val LightColors = lightColorScheme(
-    primary = AzulPrimario,
-    background = BlancodeFondo,
-    onBackground = TextoNegro
 )
 @Composable
 fun AprendeAprenderTheme(
