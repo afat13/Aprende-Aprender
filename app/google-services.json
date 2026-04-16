@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "359173384365",
+    "project_id": "aprendeaprender-8ab66",
+    "storage_bucket": "aprendeaprender-8ab66.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:359173384365:android:30612c401feb6e3372be24",
+        "android_client_info": {
+          "package_name": "com.example.aprendeaprender"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "359173384365-jvel12c75140k049blot59lcbelq5l8l.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDw0VJ4l3HoeJDDZz88JxEALoiY4VDR17g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "359173384365-jvel12c75140k049blot59lcbelq5l8l.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
