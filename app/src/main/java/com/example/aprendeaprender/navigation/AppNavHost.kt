@@ -11,6 +11,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -33,10 +35,6 @@ import com.example.aprendeaprender.ui.screens.profile.ProfileRoute
 import com.example.aprendeaprender.viewmodel.AuthEvent
 import com.example.aprendeaprender.viewmodel.AuthViewModel
 import com.example.aprendeaprender.viewmodel.ProfileViewModel
-import com.example.aprendeaprender.viewmodel.ProfileViewModelFactory
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-
 import kotlinx.coroutines.delay
 
 private fun NavHostController.navigateClearingStack(route: String) {

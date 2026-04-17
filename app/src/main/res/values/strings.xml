@@ -152,6 +152,8 @@ Al seleccionar la opción de aceptación, el usuario declara haber leído, enten
     <string name="saving_label">Guardando...</string>
     <string name="back_label">Volver</string>
 
+
+
     <string name="home_greeting">Hola %1$s</string>
     <string name="home_subtitle">Tienes %1$d tareas en curso y %2$d vencidas</string>
     <string name="home_stat_completed">Realizadas</string>

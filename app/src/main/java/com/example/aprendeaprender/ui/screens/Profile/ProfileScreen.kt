@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -27,7 +29,6 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aprendeaprender.R
-import com.example.aprendeaprender.ui.components.AppButton
 import com.example.aprendeaprender.ui.theme.CyanAccent
 import com.example.aprendeaprender.ui.theme.DarkBackground
 import com.example.aprendeaprender.ui.theme.DarkSurface
@@ -59,10 +60,7 @@ fun ProfileScreen(
                 .padding(horizontal = 24.dp, vertical = 16.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            TextButton(
-                onClick = onBackClick,
-                modifier = Modifier.padding(start = 0.dp)
-            ) {
+            TextButton(onClick = onBackClick) {
                 Text(
                     text = stringResource(id = R.string.back_label),
                     color = CyanAccent,
@@ -162,15 +160,25 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            AppButton(
-                text = if (uiState.guardando) {
-                    stringResource(id = R.string.saving_label)
-                } else {
-                    stringResource(id = R.string.profile_save_button)
-                },
+            Button(
                 onClick = onGuardarClick,
-                enabled = !uiState.guardando && !uiState.cargando
-            )
+                enabled = !uiState.guardando && !uiState.cargando,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CyanAccent,
+                    contentColor = DarkBackground,
+                    disabledContainerColor = TextGray,
+                    disabledContentColor = DarkBackground
+                )
+            ) {
+                Text(
+                    text = if (uiState.guardando) {
+                        stringResource(id = R.string.saving_label)
+                    } else {
+                        stringResource(id = R.string.profile_save_button)
+                    }
+                )
+            }
 
             if (uiState.cargando) {
                 Spacer(modifier = Modifier.height(20.dp))
