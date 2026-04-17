@@ -39,6 +39,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material:material-icons-extended")
     implementation(platform("androidx.compose:compose-bom:2024.02.01"))
     implementation("androidx.navigation:navigation-compose:2.8.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.10.0")

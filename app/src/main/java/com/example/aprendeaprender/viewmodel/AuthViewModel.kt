@@ -224,13 +224,6 @@ class AuthViewModel(
         val confirmar = state.confirmarContrasena
 
         when {
-            !state.aceptaTerminos -> {
-                _registerUiState.update {
-                    it.copy(mensajeErrorResId = R.string.auth_error_terms_required)
-                }
-                return
-            }
-
             !esCorreoValido(correo) -> {
                 _registerUiState.update {
                     it.copy(mensajeErrorResId = R.string.auth_error_invalid_email)
@@ -262,35 +255,20 @@ class AuthViewModel(
 
         viewModelScope.launch {
             try {
-                when (repository.register(correo, contrasena)) {
-                    RegisterResult.SuccessEmailSent -> {
-                        _verifyEmailUiState.update {
-                            it.copy(
-                                correo = repository.currentUserEmail().ifBlank { correo },
-                                cargando = false,
-                                mensajeErrorResId = null,
-                                mensajeExitoResId = R.string.verify_email_sent_success
-                            )
-                        }
+                repository.register(correo, contrasena)
 
-                        _authEvents.emit(AuthEvent.ShowSnackbar(R.string.register_success_verify_email_sent))
-                        _authEvents.emit(AuthEvent.NavigateToVerifyEmail)
-                    }
-
-                    RegisterResult.SuccessEmailPending -> {
-                        _verifyEmailUiState.update {
-                            it.copy(
-                                correo = repository.currentUserEmail().ifBlank { correo },
-                                cargando = false,
-                                mensajeErrorResId = R.string.verify_email_pending_send,
-                                mensajeExitoResId = null
-                            )
-                        }
-
-                        _authEvents.emit(AuthEvent.ShowSnackbar(R.string.verify_email_pending_send))
-                        _authEvents.emit(AuthEvent.NavigateToVerifyEmail)
-                    }
+                _verifyEmailUiState.update {
+                    it.copy(
+                        correo = repository.currentUserEmail().ifBlank { correo },
+                        cargando = false,
+                        mensajeErrorResId = null,
+                        mensajeExitoResId = R.string.verify_email_sent_success
+                    )
                 }
+
+                _authEvents.emit(AuthEvent.ShowSnackbar(R.string.register_success_verify_email_sent))
+                _authEvents.emit(AuthEvent.NavigateToVerifyEmail)
+
             } catch (e: Exception) {
                 _registerUiState.update {
                     it.copy(mensajeErrorResId = mapRegisterError(e))

@@ -20,16 +20,23 @@ import androidx.navigation.compose.rememberNavController
 import com.example.aprendeaprender.data.remote.FirebaseAuthService
 import com.example.aprendeaprender.data.remote.FirestoreUserService
 import com.example.aprendeaprender.data.repository.AuthRepository
+import com.example.aprendeaprender.data.repository.ProfileRepository
 import com.example.aprendeaprender.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.aprendeaprender.ui.screens.auth.login.LoginScreen
 import com.example.aprendeaprender.ui.screens.auth.register.RegisterScreen
 import com.example.aprendeaprender.ui.screens.auth.resetpassword.ResetPasswordEmailSentScreen
 import com.example.aprendeaprender.ui.screens.auth.splash.SplashScreen
 import com.example.aprendeaprender.ui.screens.auth.verifyemail.VerifyEmailScreen
-import com.example.aprendeaprender.ui.screens.home.HomeScreen
+import com.example.aprendeaprender.ui.screens.home.HomeRoute
+import com.example.aprendeaprender.ui.screens.home.HomeUiState
+import com.example.aprendeaprender.ui.screens.profile.ProfileRoute
 import com.example.aprendeaprender.viewmodel.AuthEvent
 import com.example.aprendeaprender.viewmodel.AuthViewModel
-import com.example.aprendeaprender.viewmodel.AuthViewModelFactory
+import com.example.aprendeaprender.viewmodel.ProfileViewModel
+import com.example.aprendeaprender.viewmodel.ProfileViewModelFactory
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+
 import kotlinx.coroutines.delay
 
 private fun NavHostController.navigateClearingStack(route: String) {
@@ -47,24 +54,54 @@ fun AppNavHost() {
     val context = LocalContext.current
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val repository = remember {
+    val authService = remember { FirebaseAuthService() }
+    val firestoreUserService = remember { FirestoreUserService() }
+
+    val authRepository = remember {
         AuthRepository(
-            authService = FirebaseAuthService(),
-            firestoreUserService = FirestoreUserService()
+            authService = authService,
+            firestoreUserService = firestoreUserService
         )
     }
 
-    val viewModel: AuthViewModel = viewModel(
-        factory = AuthViewModelFactory(repository)
+    val profileRepository = remember {
+        ProfileRepository(
+            authService = authService,
+            firestoreUserService = firestoreUserService
+        )
+    }
+
+    val authViewModel: AuthViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
+                    return AuthViewModel(authRepository) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
     )
 
-    val loginUiState by viewModel.loginUiState.collectAsState()
-    val registerUiState by viewModel.registerUiState.collectAsState()
-    val forgotPasswordUiState by viewModel.forgotPasswordUiState.collectAsState()
-    val verifyEmailUiState by viewModel.verifyEmailUiState.collectAsState()
+    val profileViewModel: ProfileViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
+                    return ProfileViewModel(profileRepository) as T
+                }
+                throw IllegalArgumentException("Unknown ViewModel class")
+            }
+        }
+    )
 
-    LaunchedEffect(viewModel) {
-        viewModel.authEvents.collect { event ->
+    val loginUiState by authViewModel.loginUiState.collectAsState()
+    val registerUiState by authViewModel.registerUiState.collectAsState()
+    val forgotPasswordUiState by authViewModel.forgotPasswordUiState.collectAsState()
+    val verifyEmailUiState by authViewModel.verifyEmailUiState.collectAsState()
+
+    LaunchedEffect(authViewModel) {
+        authViewModel.authEvents.collect { event ->
             when (event) {
                 AuthEvent.NavigateToHome -> {
                     navController.navigateClearingStack(Routes.HOME)
@@ -104,7 +141,7 @@ fun AppNavHost() {
             composable(Routes.SPLASH) {
                 LaunchedEffect(Unit) {
                     delay(1200)
-                    viewModel.verificarSesion()
+                    authViewModel.verificarSesion()
                 }
 
                 SplashScreen()
@@ -116,9 +153,9 @@ fun AppNavHost() {
                     password = loginUiState.contrasena,
                     isLoading = loginUiState.cargando,
                     errorResId = loginUiState.mensajeErrorResId,
-                    onEmailChange = viewModel::onLoginCorreoChange,
-                    onPasswordChange = viewModel::onLoginContrasenaChange,
-                    onLoginClick = viewModel::iniciarSesion,
+                    onEmailChange = authViewModel::onLoginCorreoChange,
+                    onPasswordChange = authViewModel::onLoginContrasenaChange,
+                    onLoginClick = authViewModel::iniciarSesion,
                     onForgotPasswordClick = {
                         navController.navigate(Routes.FORGOT_PASSWORD) {
                             launchSingleTop = true
@@ -144,15 +181,15 @@ fun AppNavHost() {
                     acceptedTerms = registerUiState.aceptaTerminos,
                     isLoading = registerUiState.cargando,
                     errorResId = registerUiState.mensajeErrorResId,
-                    onNombreChange = viewModel::onRegisterNombreChange,
-                    onApellidoChange = viewModel::onRegisterApellidoChange,
-                    onEdadChange = viewModel::onRegisterEdadChange,
-                    onCarreraChange = viewModel::onRegisterCarreraChange,
-                    onEmailChange = viewModel::onRegisterCorreoChange,
-                    onPasswordChange = viewModel::onRegisterContrasenaChange,
-                    onConfirmPasswordChange = viewModel::onRegisterConfirmarContrasenaChange,
-                    onAcceptedTermsChange = viewModel::onRegisterAceptaTerminosChange,
-                    onRegisterClick = viewModel::registrarUsuario,
+                    onNombreChange = authViewModel::onRegisterNombreChange,
+                    onApellidoChange = authViewModel::onRegisterApellidoChange,
+                    onEdadChange = authViewModel::onRegisterEdadChange,
+                    onCarreraChange = authViewModel::onRegisterCarreraChange,
+                    onEmailChange = authViewModel::onRegisterCorreoChange,
+                    onPasswordChange = authViewModel::onRegisterContrasenaChange,
+                    onConfirmPasswordChange = authViewModel::onRegisterConfirmarContrasenaChange,
+                    onAcceptedTermsChange = authViewModel::onRegisterAceptaTerminosChange,
+                    onRegisterClick = authViewModel::registrarUsuario,
                     onBackToLoginClick = {
                         navController.popBackStack()
                     }
@@ -165,8 +202,8 @@ fun AppNavHost() {
                     isLoading = forgotPasswordUiState.cargando,
                     errorResId = forgotPasswordUiState.mensajeErrorResId,
                     successResId = forgotPasswordUiState.mensajeExitoResId,
-                    onEmailChange = viewModel::onForgotPasswordCorreoChange,
-                    onSendLinkClick = viewModel::enviarCorreoRecuperacion,
+                    onEmailChange = authViewModel::onForgotPasswordCorreoChange,
+                    onSendLinkClick = authViewModel::enviarCorreoRecuperacion,
                     onBackToLoginClick = {
                         navController.popBackStack()
                     }
@@ -176,9 +213,9 @@ fun AppNavHost() {
             composable(Routes.VERIFY_EMAIL) {
                 VerifyEmailScreen(
                     uiState = verifyEmailUiState,
-                    onReenviarCorreoClick = viewModel::reenviarCorreoVerificacion,
-                    onYaVerifiqueClick = viewModel::revisarEstadoVerificacion,
-                    onVolverLoginClick = viewModel::cerrarSesion
+                    onReenviarCorreoClick = authViewModel::reenviarCorreoVerificacion,
+                    onYaVerifiqueClick = authViewModel::revisarEstadoVerificacion,
+                    onVolverLoginClick = authViewModel::cerrarSesion
                 )
             }
 
@@ -192,7 +229,42 @@ fun AppNavHost() {
             }
 
             composable(Routes.HOME) {
-                HomeScreen()
+                HomeRoute(
+                    uiState = HomeUiState(
+                        userName = "Andrés",
+                        inProgressTasks = 0,
+                        overdueTasks = 0,
+                        completedTasks = 0,
+                        todayTasks = 0,
+                        progress = 0f
+                    ),
+                    onNavigateToProfile = {
+                        navController.navigate(Routes.PROFILE) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToSubjects = {
+                        // pendiente
+                    },
+                    onNavigateToTasks = {
+                        // pendiente
+                    },
+                    onNavigateToChallenges = {
+                        // pendiente
+                    },
+                    onEnrollSubjectClick = {
+                        // pendiente
+                    }
+                )
+            }
+
+            composable(Routes.PROFILE) {
+                ProfileRoute(
+                    viewModel = profileViewModel,
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

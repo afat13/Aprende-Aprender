@@ -6,7 +6,6 @@ import com.example.aprendeaprender.data.remote.FirestoreUserService
 
 sealed class RegisterResult {
     data object SuccessEmailSent : RegisterResult()
-    data object SuccessEmailPending : RegisterResult()
 }
 
 class AuthRepository(
@@ -27,12 +26,16 @@ class AuthRepository(
     }
 
     suspend fun login(email: String, password: String): Boolean {
-        val user = authService.signIn(email, password)
-        return user.isEmailVerified
+        authService.signIn(email.trim(), password)
+        authService.reloadCurrentUser()
+        return authService.currentUser()?.isEmailVerified == true
     }
 
     suspend fun register(email: String, password: String): RegisterResult {
-        val user = authService.register(email, password)
+        val user = authService.register(email.trim(), password)
+
+
+        authService.sendEmailVerification(user)
 
         firestoreUserService.createUserProfile(
             UserProfile(
@@ -41,16 +44,11 @@ class AuthRepository(
             )
         )
 
-        return try {
-            authService.sendEmailVerification(user)
-            RegisterResult.SuccessEmailSent
-        } catch (e: Exception) {
-            RegisterResult.SuccessEmailPending
-        }
+        return RegisterResult.SuccessEmailSent
     }
 
     suspend fun sendPasswordResetEmail(email: String) {
-        authService.sendPasswordResetEmail(email)
+        authService.sendPasswordResetEmail(email.trim())
     }
 
     suspend fun resendEmailVerification() {

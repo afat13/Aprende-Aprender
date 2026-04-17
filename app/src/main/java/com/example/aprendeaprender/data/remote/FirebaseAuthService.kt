@@ -1,5 +1,6 @@
 package com.example.aprendeaprender.data.remote
 
+import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.tasks.await
@@ -7,6 +8,10 @@ import kotlinx.coroutines.tasks.await
 class FirebaseAuthService(
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 ) {
+
+    companion object {
+        private const val TAG = "FirebaseAuthService"
+    }
 
     init {
         auth.useAppLanguage()
@@ -16,12 +21,14 @@ class FirebaseAuthService(
 
     suspend fun signIn(email: String, password: String): FirebaseUser {
         val result = auth.signInWithEmailAndPassword(email, password).await()
-        return result.user ?: throw IllegalStateException("No se pudo obtener el usuario autenticado.")
+        return result.user
+            ?: throw IllegalStateException("No se pudo obtener el usuario autenticado.")
     }
 
     suspend fun register(email: String, password: String): FirebaseUser {
         val result = auth.createUserWithEmailAndPassword(email, password).await()
-        return result.user ?: throw IllegalStateException("No se pudo obtener el usuario registrado.")
+        return result.user
+            ?: throw IllegalStateException("No se pudo obtener el usuario registrado.")
     }
 
     suspend fun sendPasswordResetEmail(email: String) {
@@ -29,7 +36,12 @@ class FirebaseAuthService(
     }
 
     suspend fun sendEmailVerification(user: FirebaseUser) {
-        user.sendEmailVerification().await()
+        try {
+            user.sendEmailVerification().await()
+        } catch (e: Exception) {
+            Log.e(TAG, "Error enviando correo de verificación", e)
+            throw e
+        }
     }
 
     suspend fun reloadCurrentUser() {

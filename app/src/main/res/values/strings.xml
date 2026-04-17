@@ -111,4 +111,63 @@ Aprende a Aprender podrá actualizar o modificar estos términos y condiciones e
 
 Al seleccionar la opción de aceptación, el usuario declara haber leído, entendido y aceptado los presentes términos y condiciones.
     </string>
+
+    <string name="profile_title">Perfil</string>
+    <string name="profile_description">Actualiza tus datos personales. El correo es solo informativo y no se puede modificar.</string>
+
+    <string name="profile_first_name_label">Nombre</string>
+    <string name="profile_last_name_label">Apellido</string>
+    <string name="profile_email_label">Correo electrónico</string>
+    <string name="profile_phone_label">Número telefónico</string>
+
+    <string name="profile_email_read_only">Este campo no es editable.</string>
+    <string name="profile_phone_support">Puedes usar números, espacios, + y guiones.</string>
+
+    <string name="profile_save_button">Guardar cambios</string>
+    <string name="profile_retry_button">Reintentar</string>
+
+    <string name="profile_update_error">No se pudo actualizar el perfil.</string>
+    <string name="profile_update_success">Perfil actualizado correctamente.</string>
+
+    <string name="profile_first_name_required">El nombre es obligatorio.</string>
+    <string name="profile_first_name_short">El nombre es demasiado corto.</string>
+
+    <string name="profile_last_name_required">El apellido es obligatorio.</string>
+    <string name="profile_last_name_short">El apellido es demasiado corto.</string>
+
+    <string name="profile_phone_required">El número telefónico es obligatorio.</string>
+    <string name="profile_phone_short">El número debe tener al menos 7 dígitos.</string>
+    <string name="profile_phone_long">El número no puede superar 15 dígitos.</string>
+
+    <string name="profile_subtitle">Actualiza tus datos personales. El correo es solo informativo y no se puede modificar.</string>
+    <string name="profile_email_not_editable">Este campo no es editable.</string>
+    <string name="profile_phone_helper">Puedes usar números, espacios, + y guiones.</string>
+    <string name="profile_save_success">Los datos se actualizaron correctamente.</string>
+    <string name="profile_save_error">No fue posible guardar los datos.</string>
+    <string name="profile_load_error">No fue posible cargar el perfil.</string>
+    <string name="profile_error_empty_name">Debes ingresar el nombre.</string>
+    <string name="profile_error_empty_last_name">Debes ingresar el apellido.</string>
+    <string name="profile_error_invalid_phone">El número telefónico no es válido.</string>
+    <string name="phone_label">Número telefónico</string>
+    <string name="saving_label">Guardando...</string>
+    <string name="back_label">Volver</string>
+
+    <string name="home_greeting">Hola %1$s</string>
+    <string name="home_subtitle">Tienes %1$d tareas en curso y %2$d vencidas</string>
+    <string name="home_stat_completed">Realizadas</string>
+    <string name="home_stat_in_progress">En curso</string>
+    <string name="home_stat_today">Hoy</string>
+    <string name="home_view_subjects">Ver mis materias</string>
+    <string name="home_view_tasks_today">Ver mis tareas de hoy</string>
+    <string name="home_enroll_subject">Inscribir materia</string>
+    <string name="home_default_user_name">Usuario</string>
+    <string name="home_logo_content_description">Logo de Aprende Aprender</string>
+    <string name="home_action_arrow_content_description">Ir a la opción</string>
+
+    <string name="nav_home">Inicio</string>
+    <string name="nav_subjects">Materias</string>
+    <string name="nav_tasks">Tareas</string>
+    <string name="nav_challenges">Retos</string>
+    <string name="nav_profile">Perfil</string>
+
 </resources>

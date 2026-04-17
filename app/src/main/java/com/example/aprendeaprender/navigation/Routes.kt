@@ -8,4 +8,5 @@ object Routes {
     const val VERIFY_EMAIL = "verify_email"
     const val RESET_PASSWORD_EMAIL_SENT = "reset_password_email_sent"
     const val HOME = "home"
+    const val PROFILE = "profile"
 }
