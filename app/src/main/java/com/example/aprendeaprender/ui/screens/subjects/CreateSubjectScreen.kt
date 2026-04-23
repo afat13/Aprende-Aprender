@@ -43,12 +43,9 @@ fun CreateSubjectScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .statusBarsPadding()
-                .navigationBarsPadding()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 24.dp)
         ) {
-            // Header
             IconButton(onClick = onBackClick) {
                 Text("‹", fontSize = 32.sp, color = CyanAccent, fontWeight = FontWeight.Bold)
             }
@@ -64,7 +61,6 @@ fun CreateSubjectScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Datos de asignatura
             Text(
                 text = stringResource(R.string.subject_data_header),
                 fontSize = 16.sp,
@@ -90,7 +86,6 @@ fun CreateSubjectScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Temas
             Text(
                 text = stringResource(R.string.subject_topics_header),
                 fontSize = 16.sp,
@@ -129,7 +124,6 @@ fun CreateSubjectScreen(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Botón agregar tema
             Card(
                 colors = CardDefaults.cardColors(containerColor = CardBackground),
                 shape = RoundedCornerShape(12.dp),
@@ -158,19 +152,13 @@ fun CreateSubjectScreen(
                 }
             }
 
-            // Error
             uiState.mensajeErrorResId?.let { resId ->
                 Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    stringResource(resId),
-                    color = ErrorRed,
-                    fontSize = 13.sp
-                )
+                Text(stringResource(resId), color = ErrorRed, fontSize = 13.sp)
             }
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Botón inscribir
             AppButton(
                 text = if (uiState.cargando) {
                     stringResource(R.string.common_loading)

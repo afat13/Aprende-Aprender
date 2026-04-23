@@ -1,12 +1,7 @@
 package com.example.aprendeaprender.ui.screens.auth.login
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -47,6 +42,8 @@ fun LoginScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -105,11 +102,8 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(20.dp))
 
             AppButton(
-                text = if (isLoading) {
-                    stringResource(id = R.string.common_loading)
-                } else {
-                    stringResource(id = R.string.login_button)
-                },
+                text = if (isLoading) stringResource(id = R.string.common_loading)
+                else stringResource(id = R.string.login_button),
                 onClick = onLoginClick,
                 enabled = !isLoading
             )
@@ -121,10 +115,7 @@ fun LoginScreen(
                 enabled = !isLoading,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(
-                    text = stringResource(id = R.string.forgot_password_link),
-                    color = CyanAccent
-                )
+                Text(text = stringResource(id = R.string.forgot_password_link), color = CyanAccent)
             }
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -141,10 +132,7 @@ fun LoginScreen(
                 enabled = !isLoading,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(
-                    text = stringResource(id = R.string.register_link),
-                    color = CyanAccent
-                )
+                Text(text = stringResource(id = R.string.register_link), color = CyanAccent)
             }
         }
     }

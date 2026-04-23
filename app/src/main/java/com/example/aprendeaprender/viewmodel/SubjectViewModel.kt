@@ -21,8 +21,6 @@ class SubjectViewModel(
     private val _listUiState = MutableStateFlow(SubjectListUiState())
     val listUiState: StateFlow<SubjectListUiState> = _listUiState.asStateFlow()
 
-    // ── Crear materia ──
-
     fun onAsignaturaChange(value: String) {
         _createUiState.update { it.copy(asignatura = value, mensajeErrorResId = null) }
     }
@@ -34,9 +32,7 @@ class SubjectViewModel(
     fun onTemaChange(index: Int, value: String) {
         _createUiState.update { state ->
             val temas = state.temas.toMutableList()
-            if (index in temas.indices) {
-                temas[index] = value
-            }
+            if (index in temas.indices) temas[index] = value
             state.copy(temas = temas, mensajeErrorResId = null)
         }
     }
@@ -52,9 +48,7 @@ class SubjectViewModel(
     fun eliminarTema(index: Int) {
         _createUiState.update { state ->
             val temas = state.temas.toMutableList()
-            if (temas.size > 1 && index in temas.indices) {
-                temas.removeAt(index)
-            }
+            if (temas.size > 1 && index in temas.indices) temas.removeAt(index)
             state.copy(temas = temas)
         }
     }
@@ -64,15 +58,11 @@ class SubjectViewModel(
 
         when {
             state.asignatura.isBlank() -> {
-                _createUiState.update {
-                    it.copy(mensajeErrorResId = R.string.subject_error_empty_name)
-                }
+                _createUiState.update { it.copy(mensajeErrorResId = R.string.subject_error_empty_name) }
                 return
             }
             state.instructor.isBlank() -> {
-                _createUiState.update {
-                    it.copy(mensajeErrorResId = R.string.subject_error_empty_instructor)
-                }
+                _createUiState.update { it.copy(mensajeErrorResId = R.string.subject_error_empty_instructor) }
                 return
             }
         }
@@ -81,23 +71,20 @@ class SubjectViewModel(
 
         viewModelScope.launch {
             try {
+                android.util.Log.d("SUBJECT_VM", "Intentando crear materia: ${state.asignatura}")
                 repository.createSubject(
                     asignatura = state.asignatura,
                     instructor = state.instructor,
                     temas = state.temas
                 )
-                _createUiState.update {
-                    it.copy(cargando = false, materiaCreada = true)
-                }
+                android.util.Log.d("SUBJECT_VM", "Materia creada exitosamente")
+                _createUiState.update { it.copy(cargando = false, materiaCreada = true) }
             } catch (e: Exception) {
-            android.util.Log.e("SUBJECT", "Error inscribiendo materia", e)
-            _createUiState.update {
-                it.copy(
-                    cargando = false,
-                    mensajeErrorResId = mapSubjectError(e)
-                )
+                android.util.Log.e("SUBJECT_VM", "Error al crear materia: ${e.javaClass.simpleName} - ${e.message}", e)
+                _createUiState.update {
+                    it.copy(cargando = false, mensajeErrorResId = mapSubjectError(e))
+                }
             }
-        }
         }
     }
 
@@ -105,23 +92,17 @@ class SubjectViewModel(
         _createUiState.update { CreateSubjectUiState() }
     }
 
-    // ── Listar materias ──
-
     fun cargarMaterias() {
         _listUiState.update { it.copy(cargando = true, mensajeErrorResId = null) }
 
         viewModelScope.launch {
             try {
                 val subjects = repository.getMySubjects()
-                _listUiState.update {
-                    it.copy(cargando = false, subjects = subjects)
-                }
+                _listUiState.update { it.copy(cargando = false, subjects = subjects) }
             } catch (e: Exception) {
+                android.util.Log.e("SUBJECT_VM", "Error al cargar materias: ${e.message}", e)
                 _listUiState.update {
-                    it.copy(
-                        cargando = false,
-                        mensajeErrorResId = mapSubjectError(e)
-                    )
+                    it.copy(cargando = false, mensajeErrorResId = mapSubjectError(e))
                 }
             }
         }
@@ -132,8 +113,8 @@ class SubjectViewModel(
             try {
                 repository.deleteSubject(subjectId)
                 cargarMaterias()
-            } catch (_: Exception) {
-                // silencioso por ahora
+            } catch (e: Exception) {
+                android.util.Log.e("SUBJECT_VM", "Error al eliminar materia: ${e.message}", e)
             }
         }
     }

@@ -20,7 +20,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.aprendeaprender.data.remote.FirebaseAuthService
-import com.example.aprendeaprender.data.remote.FirestoreSubjectService
+import com.example.aprendeaprender.data.remote.RealtimeSubjectService
 import com.example.aprendeaprender.data.remote.FirestoreUserService
 import com.example.aprendeaprender.data.repository.AuthRepository
 import com.example.aprendeaprender.data.repository.ProfileRepository
@@ -64,21 +64,21 @@ fun AppNavHost() {
     val authRepository = remember {
         AuthRepository(
             authService = authService,
-            firestoreUserService = firestoreUserService
+            userService = firestoreUserService
         )
     }
 
     val profileRepository = remember {
         ProfileRepository(
             authService = authService,
-            firestoreUserService = firestoreUserService
+            userService = firestoreUserService
         )
     }
 
     val subjectRepository = remember {
         SubjectRepository(
             authService = authService,
-            subjectService = FirestoreSubjectService()
+            subjectService = RealtimeSubjectService()
         )
     }
 
@@ -157,8 +157,6 @@ fun AppNavHost() {
             startDestination = Routes.SPLASH,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // ── Auth ──
-
             composable(Routes.SPLASH) {
                 LaunchedEffect(Unit) {
                     delay(1200)
@@ -248,8 +246,6 @@ fun AppNavHost() {
                 )
             }
 
-            // ── Home ──
-
             composable(Routes.HOME) {
                 val homeUiState by homeViewModel.uiState.collectAsState()
 
@@ -284,8 +280,6 @@ fun AppNavHost() {
                 )
             }
 
-            // ── Profile ──
-
             composable(Routes.PROFILE) {
                 ProfileRoute(
                     viewModel = profileViewModel,
@@ -297,8 +291,6 @@ fun AppNavHost() {
                     }
                 )
             }
-
-            // ── Subjects ──
 
             composable(Routes.CREATE_SUBJECT) {
                 val createUiState by subjectViewModel.createUiState.collectAsState()
@@ -327,7 +319,6 @@ fun AppNavHost() {
             composable(Routes.SUBJECT_SUCCESS) {
                 SubjectSuccessScreen(
                     onAddTaskClick = {
-                        // TODO: navegar a crear tarea
                         subjectViewModel.resetCreateForm()
                         navController.navigateClearingStack(Routes.HOME)
                     },

@@ -1,6 +1,5 @@
 package com.example.aprendeaprender.ui.screens.subjects
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -70,8 +69,6 @@ fun SubjectListScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .statusBarsPadding()
-                .navigationBarsPadding()
                 .padding(horizontal = 24.dp)
         ) {
             IconButton(onClick = onBackClick) {
@@ -106,19 +103,14 @@ fun SubjectListScreen(
                     )
                 }
             } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
                     items(uiState.subjects) { subject ->
                         SubjectCard(
                             subject = subject,
                             onDeleteClick = { subjectToDelete = subject }
                         )
                     }
-
-                    item {
-                        Spacer(modifier = Modifier.height(16.dp))
-                    }
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
                 }
             }
         }
@@ -135,9 +127,7 @@ private fun SubjectCard(
         shape = RoundedCornerShape(16.dp),
         modifier = Modifier.fillMaxWidth()
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
@@ -166,11 +156,7 @@ private fun SubjectCard(
 
             Spacer(modifier = Modifier.height(4.dp))
 
-            Text(
-                text = subject.instructor,
-                fontSize = 14.sp,
-                color = TextGray
-            )
+            Text(text = subject.instructor, fontSize = 14.sp, color = TextGray)
 
             if (subject.temas.isNotEmpty()) {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -179,7 +165,6 @@ private fun SubjectCard(
                     fontSize = 12.sp,
                     color = TextGray
                 )
-
                 subject.temas.forEach { tema ->
                     Text(
                         text = "• $tema",

@@ -2,11 +2,11 @@ package com.example.aprendeaprender.data.repository
 
 import com.example.aprendeaprender.data.model.Subject
 import com.example.aprendeaprender.data.remote.FirebaseAuthService
-import com.example.aprendeaprender.data.remote.FirestoreSubjectService
+import com.example.aprendeaprender.data.remote.RealtimeSubjectService
 
 class SubjectRepository(
     private val authService: FirebaseAuthService,
-    private val subjectService: FirestoreSubjectService
+    private val subjectService: RealtimeSubjectService
 ) {
 
     private fun currentUserId(): String {
@@ -33,6 +33,6 @@ class SubjectRepository(
     }
 
     suspend fun deleteSubject(subjectId: String) {
-        subjectService.deleteSubject(subjectId)
+        subjectService.deleteSubject(currentUserId(), subjectId)
     }
 }

@@ -35,7 +35,6 @@ fun ProfileScreen(
     var isEditing by remember { mutableStateOf(false) }
     var showLogoutDialog by remember { mutableStateOf(false) }
 
-    // Cuando se guarda exitosamente, salir del modo edición
     LaunchedEffect(uiState.mensajeExitoResId) {
         if (uiState.mensajeExitoResId != null) {
             isEditing = false
@@ -91,23 +90,15 @@ fun ProfileScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(innerPadding)
-                    .statusBarsPadding()
-                    .navigationBarsPadding()
                     .verticalScroll(rememberScrollState())
                     .padding(horizontal = 24.dp)
             ) {
-                // Flecha de regreso
                 IconButton(onClick = {
-                    if (isEditing) {
-                        isEditing = false
-                    } else {
-                        onBackClick()
-                    }
+                    if (isEditing) isEditing = false else onBackClick()
                 }) {
                     Text("‹", fontSize = 32.sp, color = CyanAccent, fontWeight = FontWeight.Bold)
                 }
 
-                // Nombre del usuario
                 val nombreCompleto = "${uiState.nombre} ${uiState.apellido}".trim()
                 Text(
                     text = nombreCompleto.ifBlank { uiState.correo },
@@ -119,7 +110,6 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Foto de perfil
                 Box(
                     modifier = Modifier
                         .size(100.dp)
@@ -139,7 +129,6 @@ fun ProfileScreen(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 if (isEditing) {
-                    // ── MODO EDICIÓN ──
                     ProfileEditableField(
                         label = stringResource(R.string.first_name_label),
                         value = uiState.nombre,
@@ -169,7 +158,6 @@ fun ProfileScreen(
                         enabled = !uiState.guardando
                     )
                 } else {
-                    // ── MODO VISTA ──
                     ProfileInfoField(
                         label = stringResource(R.string.email_label),
                         value = uiState.correo.ifBlank { "—" }
@@ -194,7 +182,6 @@ fun ProfileScreen(
                     )
                 }
 
-                // Mensajes de error/éxito
                 uiState.mensajeErrorResId?.let { resId ->
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(stringResource(resId), color = ErrorRed, fontSize = 13.sp)
@@ -207,15 +194,11 @@ fun ProfileScreen(
 
                 Spacer(modifier = Modifier.weight(1f))
 
-                // Botones
                 if (isEditing) {
-                    // Guardar cambios
                     Button(
                         onClick = onGuardarClick,
                         enabled = !uiState.guardando,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = CyanAccent,
@@ -224,21 +207,15 @@ fun ProfileScreen(
                         )
                     ) {
                         Text(
-                            text = if (uiState.guardando) {
-                                stringResource(R.string.saving_label)
-                            } else {
-                                stringResource(R.string.profile_btn_save)
-                            },
+                            text = if (uiState.guardando) stringResource(R.string.saving_label)
+                            else stringResource(R.string.profile_btn_save),
                             style = MaterialTheme.typography.titleMedium
                         )
                     }
                 } else {
-                    // Editar perfil
                     Button(
                         onClick = { isEditing = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = CyanAccent,
@@ -253,12 +230,9 @@ fun ProfileScreen(
 
                     Spacer(modifier = Modifier.height(12.dp))
 
-                    // Cerrar sesión
                     OutlinedButton(
                         onClick = { showLogoutDialog = true },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(52.dp),
+                        modifier = Modifier.fillMaxWidth().height(52.dp),
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = CyanAccent)
                     ) {

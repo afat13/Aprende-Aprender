@@ -10,7 +10,7 @@ sealed class RegisterResult {
 
 class AuthRepository(
     private val authService: FirebaseAuthService,
-    private val firestoreUserService: FirestoreUserService
+    private val userService: FirestoreUserService
 ) {
 
     fun hasActiveSession(): Boolean {
@@ -42,7 +42,7 @@ class AuthRepository(
 
         authService.sendEmailVerification(user)
 
-        firestoreUserService.createUserProfile(
+        userService.createUserProfile(
             UserProfile(
                 uid = user.uid,
                 email = user.email.orEmpty(),

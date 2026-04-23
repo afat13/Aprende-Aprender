@@ -6,5 +6,5 @@ data class Subject(
     val asignatura: String = "",
     val instructor: String = "",
     val temas: List<String> = emptyList(),
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = 0L
 )

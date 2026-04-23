@@ -1,6 +1,5 @@
 package com.example.aprendeaprender.ui.screens.subjects
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -32,8 +31,6 @@ fun SubjectSuccessScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .statusBarsPadding()
-                .navigationBarsPadding()
                 .padding(horizontal = 24.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -59,7 +56,6 @@ fun SubjectSuccessScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Agregar Tarea
             Card(
                 colors = CardDefaults.cardColors(containerColor = CardBackground),
                 shape = RoundedCornerShape(12.dp),
@@ -90,7 +86,6 @@ fun SubjectSuccessScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Finalizar
             AppButton(
                 text = stringResource(R.string.subject_finish),
                 onClick = onFinishClick

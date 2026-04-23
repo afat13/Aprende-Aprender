@@ -1,12 +1,7 @@
 package com.example.aprendeaprender.ui.screens.auth.forgotpassword
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -44,6 +39,8 @@ fun ForgotPasswordScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -91,30 +88,19 @@ fun ForgotPasswordScreen(
 
             errorResId?.let { resId ->
                 Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = stringResource(id = resId),
-                    color = ErrorRed,
-                    fontSize = 13.sp
-                )
+                Text(text = stringResource(id = resId), color = ErrorRed, fontSize = 13.sp)
             }
 
             successResId?.let { resId ->
                 Spacer(modifier = Modifier.height(10.dp))
-                Text(
-                    text = stringResource(id = resId),
-                    color = CyanAccent,
-                    fontSize = 13.sp
-                )
+                Text(text = stringResource(id = resId), color = CyanAccent, fontSize = 13.sp)
             }
 
             Spacer(modifier = Modifier.height(20.dp))
 
             AppButton(
-                text = if (isLoading) {
-                    stringResource(id = R.string.common_loading)
-                } else {
-                    stringResource(id = R.string.send_link_button)
-                },
+                text = if (isLoading) stringResource(id = R.string.common_loading)
+                else stringResource(id = R.string.send_link_button),
                 onClick = onSendLinkClick,
                 enabled = !isLoading
             )
@@ -126,10 +112,7 @@ fun ForgotPasswordScreen(
                 enabled = !isLoading,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(
-                    text = stringResource(id = R.string.back_to_login),
-                    color = CyanAccent
-                )
+                Text(text = stringResource(id = R.string.back_to_login), color = CyanAccent)
             }
         }
     }
