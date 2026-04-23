@@ -30,10 +30,10 @@ import com.example.aprendeaprender.ui.screens.auth.resetpassword.ResetPasswordEm
 import com.example.aprendeaprender.ui.screens.auth.splash.SplashScreen
 import com.example.aprendeaprender.ui.screens.auth.verifyemail.VerifyEmailScreen
 import com.example.aprendeaprender.ui.screens.home.HomeRoute
-import com.example.aprendeaprender.ui.screens.home.HomeUiState
 import com.example.aprendeaprender.ui.screens.profile.ProfileRoute
 import com.example.aprendeaprender.viewmodel.AuthEvent
 import com.example.aprendeaprender.viewmodel.AuthViewModel
+import com.example.aprendeaprender.viewmodel.HomeViewModel
 import com.example.aprendeaprender.viewmodel.ProfileViewModel
 import kotlinx.coroutines.delay
 
@@ -73,10 +73,7 @@ fun AppNavHost() {
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(AuthViewModel::class.java)) {
-                    return AuthViewModel(authRepository) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
+                return AuthViewModel(authRepository) as T
             }
         }
     )
@@ -85,10 +82,16 @@ fun AppNavHost() {
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
-                if (modelClass.isAssignableFrom(ProfileViewModel::class.java)) {
-                    return ProfileViewModel(profileRepository) as T
-                }
-                throw IllegalArgumentException("Unknown ViewModel class")
+                return ProfileViewModel(profileRepository) as T
+            }
+        }
+    )
+
+    val homeViewModel: HomeViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return HomeViewModel(profileRepository) as T
             }
         }
     )
@@ -104,21 +107,17 @@ fun AppNavHost() {
                 AuthEvent.NavigateToHome -> {
                     navController.navigateClearingStack(Routes.HOME)
                 }
-
                 AuthEvent.NavigateToLogin -> {
                     navController.navigateClearingStack(Routes.LOGIN)
                 }
-
                 AuthEvent.NavigateToVerifyEmail -> {
                     navController.navigateClearingStack(Routes.VERIFY_EMAIL)
                 }
-
                 AuthEvent.NavigateToResetPasswordEmailSent -> {
                     navController.navigate(Routes.RESET_PASSWORD_EMAIL_SENT) {
                         launchSingleTop = true
                     }
                 }
-
                 is AuthEvent.ShowSnackbar -> {
                     snackbarHostState.showSnackbar(
                         message = context.getString(event.messageResId)
@@ -141,7 +140,6 @@ fun AppNavHost() {
                     delay(1200)
                     authViewModel.verificarSesion()
                 }
-
                 SplashScreen()
             }
 
@@ -227,31 +225,30 @@ fun AppNavHost() {
             }
 
             composable(Routes.HOME) {
+                val homeUiState by homeViewModel.uiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    homeViewModel.cargarDatosHome()
+                }
+
                 HomeRoute(
-                    uiState = HomeUiState(
-                        userName = "Andrés",
-                        inProgressTasks = 0,
-                        overdueTasks = 0,
-                        completedTasks = 0,
-                        todayTasks = 0,
-                        progress = 0f
-                    ),
+                    uiState = homeUiState,
                     onNavigateToProfile = {
                         navController.navigate(Routes.PROFILE) {
                             launchSingleTop = true
                         }
                     },
                     onNavigateToSubjects = {
-                        // pendiente
+                        // TODO: módulo materias
                     },
                     onNavigateToTasks = {
-                        // pendiente
+                        // TODO: módulo tareas
                     },
                     onNavigateToChallenges = {
-                        // pendiente
+                        // TODO: módulo retos
                     },
                     onEnrollSubjectClick = {
-                        // pendiente
+                        // TODO: inscribir materia
                     }
                 )
             }
@@ -261,6 +258,9 @@ fun AppNavHost() {
                     viewModel = profileViewModel,
                     onBackClick = {
                         navController.popBackStack()
+                    },
+                    onCerrarSesionClick = {
+                        authViewModel.cerrarSesion()
                     }
                 )
             }

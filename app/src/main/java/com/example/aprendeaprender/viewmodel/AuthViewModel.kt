@@ -255,7 +255,12 @@ class AuthViewModel(
 
         viewModelScope.launch {
             try {
-                repository.register(correo, contrasena)
+                repository.register(
+                    email = correo,
+                    password = contrasena,
+                    nombre = state.nombre.trim(),
+                    apellido = state.apellido.trim()
+                )
 
                 _verifyEmailUiState.update {
                     it.copy(

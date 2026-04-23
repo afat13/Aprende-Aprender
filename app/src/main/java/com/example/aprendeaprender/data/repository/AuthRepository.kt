@@ -31,16 +31,24 @@ class AuthRepository(
         return authService.currentUser()?.isEmailVerified == true
     }
 
-    suspend fun register(email: String, password: String): RegisterResult {
+    suspend fun register(
+        email: String,
+        password: String,
+        nombre: String = "",
+        apellido: String = "",
+        telefono: String = ""
+    ): RegisterResult {
         val user = authService.register(email.trim(), password)
-
 
         authService.sendEmailVerification(user)
 
         firestoreUserService.createUserProfile(
             UserProfile(
                 uid = user.uid,
-                email = user.email.orEmpty()
+                email = user.email.orEmpty(),
+                nombre = nombre,
+                apellido = apellido,
+                telefono = telefono
             )
         )
 

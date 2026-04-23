@@ -1,40 +1,25 @@
 package com.example.aprendeaprender.ui.screens.profile
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aprendeaprender.R
-import com.example.aprendeaprender.ui.theme.CyanAccent
-import com.example.aprendeaprender.ui.theme.DarkBackground
-import com.example.aprendeaprender.ui.theme.DarkSurface
-import com.example.aprendeaprender.ui.theme.ErrorRed
-import com.example.aprendeaprender.ui.theme.TextGray
-import com.example.aprendeaprender.ui.theme.TextWhite
+import com.example.aprendeaprender.ui.theme.*
 import com.example.aprendeaprender.viewmodel.ProfileUiState
 
 @Composable
@@ -44,189 +29,297 @@ fun ProfileScreen(
     onApellidoChange: (String) -> Unit,
     onTelefonoChange: (String) -> Unit,
     onGuardarClick: () -> Unit,
+    onCerrarSesionClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
-    Scaffold(
-        containerColor = DarkBackground
-    ) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(DarkBackground)
-                .statusBarsPadding()
-                .navigationBarsPadding()
-                .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            verticalArrangement = Arrangement.Top
-        ) {
-            TextButton(onClick = onBackClick) {
+    var isEditing by remember { mutableStateOf(false) }
+    var showLogoutDialog by remember { mutableStateOf(false) }
+
+    // Cuando se guarda exitosamente, salir del modo edición
+    LaunchedEffect(uiState.mensajeExitoResId) {
+        if (uiState.mensajeExitoResId != null) {
+            isEditing = false
+        }
+    }
+
+    if (showLogoutDialog) {
+        AlertDialog(
+            onDismissRequest = { showLogoutDialog = false },
+            containerColor = DarkSurface,
+            title = {
                 Text(
-                    text = stringResource(id = R.string.back_label),
-                    color = CyanAccent,
-                    fontSize = 15.sp
+                    stringResource(R.string.profile_logout_title),
+                    fontWeight = FontWeight.Bold,
+                    color = TextWhite
                 )
-            }
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            Text(
-                text = stringResource(id = R.string.profile_title),
-                color = TextWhite,
-                fontSize = 30.sp,
-                fontWeight = FontWeight.SemiBold
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
-            Text(
-                text = stringResource(id = R.string.profile_subtitle),
-                color = TextGray,
-                fontSize = 14.sp
-            )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            ProfileTextField(
-                value = uiState.nombre,
-                label = stringResource(id = R.string.first_name_label),
-                onValueChange = onNombreChange,
-                enabled = !uiState.guardando
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            ProfileTextField(
-                value = uiState.apellido,
-                label = stringResource(id = R.string.last_name_label),
-                onValueChange = onApellidoChange,
-                enabled = !uiState.guardando
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            ProfileTextField(
-                value = uiState.correo,
-                label = stringResource(id = R.string.email_label),
-                onValueChange = {},
-                enabled = false,
-                readOnly = true,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email)
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = stringResource(id = R.string.profile_email_not_editable),
-                color = TextGray,
-                fontSize = 12.sp
-            )
-
-            Spacer(modifier = Modifier.height(14.dp))
-
-            ProfileTextField(
-                value = uiState.telefono,
-                label = stringResource(id = R.string.phone_label),
-                onValueChange = onTelefonoChange,
-                enabled = !uiState.guardando,
-                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
-
-            Text(
-                text = stringResource(id = R.string.profile_phone_helper),
-                color = TextGray,
-                fontSize = 12.sp
-            )
-
-            uiState.mensajeErrorResId?.let { resId ->
-                Spacer(modifier = Modifier.height(12.dp))
+            },
+            text = {
                 Text(
-                    text = stringResource(id = resId),
-                    color = ErrorRed,
-                    fontSize = 13.sp
+                    stringResource(R.string.profile_logout_message),
+                    color = TextGray,
+                    fontSize = 14.sp
                 )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    showLogoutDialog = false
+                    onCerrarSesionClick()
+                }) {
+                    Text(stringResource(R.string.profile_btn_logout), color = CyanAccent)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLogoutDialog = false }) {
+                    Text(stringResource(R.string.profile_btn_cancel), color = TextGray)
+                }
             }
+        )
+    }
 
-            uiState.mensajeExitoResId?.let { resId ->
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(
-                    text = stringResource(id = resId),
-                    color = CyanAccent,
-                    fontSize = 13.sp
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            Button(
-                onClick = onGuardarClick,
-                enabled = !uiState.guardando && !uiState.cargando,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = CyanAccent,
-                    contentColor = DarkBackground,
-                    disabledContainerColor = TextGray,
-                    disabledContentColor = DarkBackground
-                )
+    Scaffold(containerColor = DarkBackground) { innerPadding ->
+        if (uiState.cargando) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = if (uiState.guardando) {
-                        stringResource(id = R.string.saving_label)
-                    } else {
-                        stringResource(id = R.string.profile_save_button)
-                    }
-                )
-            }
-
-            if (uiState.cargando) {
-                Spacer(modifier = Modifier.height(20.dp))
                 CircularProgressIndicator(color = CyanAccent)
             }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(innerPadding)
+                    .statusBarsPadding()
+                    .navigationBarsPadding()
+                    .verticalScroll(rememberScrollState())
+                    .padding(horizontal = 24.dp)
+            ) {
+                // Flecha de regreso
+                IconButton(onClick = {
+                    if (isEditing) {
+                        isEditing = false
+                    } else {
+                        onBackClick()
+                    }
+                }) {
+                    Text("‹", fontSize = 32.sp, color = CyanAccent, fontWeight = FontWeight.Bold)
+                }
 
-            Spacer(modifier = Modifier.height(24.dp))
+                // Nombre del usuario
+                val nombreCompleto = "${uiState.nombre} ${uiState.apellido}".trim()
+                Text(
+                    text = nombreCompleto.ifBlank { uiState.correo },
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = CyanAccent,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                // Foto de perfil
+                Box(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .clip(CircleShape)
+                        .border(2.dp, CyanAccent, CircleShape)
+                        .background(DarkSurface)
+                        .align(Alignment.CenterHorizontally),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.logo),
+                        contentDescription = stringResource(R.string.profile_cd_photo),
+                        modifier = Modifier.size(60.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                if (isEditing) {
+                    // ── MODO EDICIÓN ──
+                    ProfileEditableField(
+                        label = stringResource(R.string.first_name_label),
+                        value = uiState.nombre,
+                        onValueChange = onNombreChange,
+                        enabled = !uiState.guardando
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ProfileEditableField(
+                        label = stringResource(R.string.last_name_label),
+                        value = uiState.apellido,
+                        onValueChange = onApellidoChange,
+                        enabled = !uiState.guardando
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ProfileInfoField(
+                        label = stringResource(R.string.email_label),
+                        value = uiState.correo.ifBlank { "—" }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ProfileEditableField(
+                        label = stringResource(R.string.phone_label),
+                        value = uiState.telefono,
+                        onValueChange = onTelefonoChange,
+                        enabled = !uiState.guardando
+                    )
+                } else {
+                    // ── MODO VISTA ──
+                    ProfileInfoField(
+                        label = stringResource(R.string.email_label),
+                        value = uiState.correo.ifBlank { "—" }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ProfileInfoField(
+                        label = stringResource(R.string.first_name_label),
+                        value = uiState.nombre.ifBlank { "—" }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ProfileInfoField(
+                        label = stringResource(R.string.last_name_label),
+                        value = uiState.apellido.ifBlank { "—" }
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    ProfileInfoField(
+                        label = stringResource(R.string.phone_label),
+                        value = uiState.telefono.ifBlank { "—" }
+                    )
+                }
+
+                // Mensajes de error/éxito
+                uiState.mensajeErrorResId?.let { resId ->
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(stringResource(resId), color = ErrorRed, fontSize = 13.sp)
+                }
+
+                uiState.mensajeExitoResId?.let { resId ->
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(stringResource(resId), color = CyanAccent, fontSize = 13.sp)
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                // Botones
+                if (isEditing) {
+                    // Guardar cambios
+                    Button(
+                        onClick = onGuardarClick,
+                        enabled = !uiState.guardando,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CyanAccent,
+                            contentColor = DarkBackground,
+                            disabledContainerColor = CyanAccent.copy(alpha = 0.45f)
+                        )
+                    ) {
+                        Text(
+                            text = if (uiState.guardando) {
+                                stringResource(R.string.saving_label)
+                            } else {
+                                stringResource(R.string.profile_btn_save)
+                            },
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                } else {
+                    // Editar perfil
+                    Button(
+                        onClick = { isEditing = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = CyanAccent,
+                            contentColor = DarkBackground
+                        )
+                    ) {
+                        Text(
+                            stringResource(R.string.profile_btn_edit),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    // Cerrar sesión
+                    OutlinedButton(
+                        onClick = { showLogoutDialog = true },
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp),
+                        shape = RoundedCornerShape(14.dp),
+                        colors = ButtonDefaults.outlinedButtonColors(contentColor = CyanAccent)
+                    ) {
+                        Text(
+                            stringResource(R.string.profile_btn_logout),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+            }
         }
     }
 }
 
 @Composable
-private fun ProfileTextField(
-    value: String,
+fun ProfileInfoField(label: String, value: String) {
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextWhite)
+        Spacer(modifier = Modifier.height(4.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .border(1.dp, TextGray, RoundedCornerShape(10.dp))
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            Text(value, fontSize = 14.sp, color = TextGray)
+        }
+    }
+}
+
+@Composable
+fun ProfileEditableField(
     label: String,
+    value: String,
     onValueChange: (String) -> Unit,
-    enabled: Boolean,
-    readOnly: Boolean = false,
-    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+    enabled: Boolean = true
 ) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier.fillMaxWidth(),
-        label = {
-            Text(
-                text = label,
-                color = TextGray
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Text(label, fontSize = 13.sp, fontWeight = FontWeight.Bold, color = TextWhite)
+        Spacer(modifier = Modifier.height(4.dp))
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            enabled = enabled,
+            singleLine = true,
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(10.dp),
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = DarkSurface,
+                unfocusedContainerColor = DarkSurface,
+                disabledContainerColor = DarkSurface,
+                focusedTextColor = TextWhite,
+                unfocusedTextColor = TextWhite,
+                disabledTextColor = TextGray,
+                focusedBorderColor = CyanAccent,
+                unfocusedBorderColor = TextGray,
+                disabledBorderColor = TextGray,
+                cursorColor = CyanAccent
             )
-        },
-        enabled = enabled,
-        readOnly = readOnly,
-        singleLine = true,
-        keyboardOptions = keyboardOptions,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = DarkSurface,
-            unfocusedContainerColor = DarkSurface,
-            disabledContainerColor = DarkSurface,
-            focusedTextColor = TextWhite,
-            unfocusedTextColor = TextWhite,
-            disabledTextColor = TextGray,
-            focusedBorderColor = CyanAccent,
-            unfocusedBorderColor = TextGray,
-            disabledBorderColor = TextGray,
-            focusedLabelColor = CyanAccent,
-            unfocusedLabelColor = TextGray,
-            disabledLabelColor = TextGray,
-            cursorColor = CyanAccent
         )
-    )
+    }
 }
