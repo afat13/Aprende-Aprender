@@ -9,4 +9,7 @@ object Routes {
     const val RESET_PASSWORD_EMAIL_SENT = "reset_password_email_sent"
     const val HOME = "home"
     const val PROFILE = "profile"
+    const val CREATE_SUBJECT = "create_subject"
+    const val SUBJECT_SUCCESS = "subject_success"
+    const val SUBJECT_LIST = "subject_list"
 }

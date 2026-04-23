@@ -20,9 +20,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.aprendeaprender.data.remote.FirebaseAuthService
+import com.example.aprendeaprender.data.remote.FirestoreSubjectService
 import com.example.aprendeaprender.data.remote.FirestoreUserService
 import com.example.aprendeaprender.data.repository.AuthRepository
 import com.example.aprendeaprender.data.repository.ProfileRepository
+import com.example.aprendeaprender.data.repository.SubjectRepository
 import com.example.aprendeaprender.ui.screens.auth.forgotpassword.ForgotPasswordScreen
 import com.example.aprendeaprender.ui.screens.auth.login.LoginScreen
 import com.example.aprendeaprender.ui.screens.auth.register.RegisterScreen
@@ -31,10 +33,14 @@ import com.example.aprendeaprender.ui.screens.auth.splash.SplashScreen
 import com.example.aprendeaprender.ui.screens.auth.verifyemail.VerifyEmailScreen
 import com.example.aprendeaprender.ui.screens.home.HomeRoute
 import com.example.aprendeaprender.ui.screens.profile.ProfileRoute
+import com.example.aprendeaprender.ui.screens.subjects.CreateSubjectScreen
+import com.example.aprendeaprender.ui.screens.subjects.SubjectListScreen
+import com.example.aprendeaprender.ui.screens.subjects.SubjectSuccessScreen
 import com.example.aprendeaprender.viewmodel.AuthEvent
 import com.example.aprendeaprender.viewmodel.AuthViewModel
 import com.example.aprendeaprender.viewmodel.HomeViewModel
 import com.example.aprendeaprender.viewmodel.ProfileViewModel
+import com.example.aprendeaprender.viewmodel.SubjectViewModel
 import kotlinx.coroutines.delay
 
 private fun NavHostController.navigateClearingStack(route: String) {
@@ -69,6 +75,13 @@ fun AppNavHost() {
         )
     }
 
+    val subjectRepository = remember {
+        SubjectRepository(
+            authService = authService,
+            subjectService = FirestoreSubjectService()
+        )
+    }
+
     val authViewModel: AuthViewModel = viewModel(
         factory = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
@@ -92,6 +105,15 @@ fun AppNavHost() {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T {
                 return HomeViewModel(profileRepository) as T
+            }
+        }
+    )
+
+    val subjectViewModel: SubjectViewModel = viewModel(
+        factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                return SubjectViewModel(subjectRepository) as T
             }
         }
     )
@@ -135,6 +157,8 @@ fun AppNavHost() {
             startDestination = Routes.SPLASH,
             modifier = Modifier.padding(innerPadding)
         ) {
+            // ── Auth ──
+
             composable(Routes.SPLASH) {
                 LaunchedEffect(Unit) {
                     delay(1200)
@@ -224,6 +248,8 @@ fun AppNavHost() {
                 )
             }
 
+            // ── Home ──
+
             composable(Routes.HOME) {
                 val homeUiState by homeViewModel.uiState.collectAsState()
 
@@ -239,7 +265,9 @@ fun AppNavHost() {
                         }
                     },
                     onNavigateToSubjects = {
-                        // TODO: módulo materias
+                        navController.navigate(Routes.SUBJECT_LIST) {
+                            launchSingleTop = true
+                        }
                     },
                     onNavigateToTasks = {
                         // TODO: módulo tareas
@@ -248,10 +276,15 @@ fun AppNavHost() {
                         // TODO: módulo retos
                     },
                     onEnrollSubjectClick = {
-                        // TODO: inscribir materia
+                        subjectViewModel.resetCreateForm()
+                        navController.navigate(Routes.CREATE_SUBJECT) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
+
+            // ── Profile ──
 
             composable(Routes.PROFILE) {
                 ProfileRoute(
@@ -262,6 +295,60 @@ fun AppNavHost() {
                     onCerrarSesionClick = {
                         authViewModel.cerrarSesion()
                     }
+                )
+            }
+
+            // ── Subjects ──
+
+            composable(Routes.CREATE_SUBJECT) {
+                val createUiState by subjectViewModel.createUiState.collectAsState()
+
+                LaunchedEffect(createUiState.materiaCreada) {
+                    if (createUiState.materiaCreada) {
+                        navController.navigate(Routes.SUBJECT_SUCCESS) {
+                            popUpTo(Routes.CREATE_SUBJECT) { inclusive = true }
+                            launchSingleTop = true
+                        }
+                    }
+                }
+
+                CreateSubjectScreen(
+                    uiState = createUiState,
+                    onAsignaturaChange = subjectViewModel::onAsignaturaChange,
+                    onInstructorChange = subjectViewModel::onInstructorChange,
+                    onTemaChange = subjectViewModel::onTemaChange,
+                    onAgregarTema = subjectViewModel::agregarTema,
+                    onEliminarTema = subjectViewModel::eliminarTema,
+                    onInscribirClick = subjectViewModel::inscribirMateria,
+                    onBackClick = { navController.popBackStack() }
+                )
+            }
+
+            composable(Routes.SUBJECT_SUCCESS) {
+                SubjectSuccessScreen(
+                    onAddTaskClick = {
+                        // TODO: navegar a crear tarea
+                        subjectViewModel.resetCreateForm()
+                        navController.navigateClearingStack(Routes.HOME)
+                    },
+                    onFinishClick = {
+                        subjectViewModel.resetCreateForm()
+                        navController.navigateClearingStack(Routes.HOME)
+                    }
+                )
+            }
+
+            composable(Routes.SUBJECT_LIST) {
+                val listUiState by subjectViewModel.listUiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    subjectViewModel.cargarMaterias()
+                }
+
+                SubjectListScreen(
+                    uiState = listUiState,
+                    onDeleteClick = subjectViewModel::eliminarMateria,
+                    onBackClick = { navController.popBackStack() }
                 )
             }
         }

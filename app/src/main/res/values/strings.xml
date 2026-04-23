@@ -181,4 +181,27 @@ Al seleccionar la opción de aceptación, el usuario declara haber leído, enten
     <string name="profile_btn_save">Guardar cambios</string>
     <string name="profile_cd_photo">Foto de perfil</string>
 
+    <!-- Subjects -->
+    <string name="subject_new_title">Nueva Materia</string>
+    <string name="subject_data_header">Datos de asignatura</string>
+    <string name="subject_name_label">asignatura</string>
+    <string name="subject_instructor_label">Instructor</string>
+    <string name="subject_topics_header">cuales temas voy a ver ?</string>
+    <string name="subject_topic_label">Tema %1$d</string>
+    <string name="subject_add_topic">un tema adicional ?</string>
+    <string name="subject_save_topics">Guardar Temas</string>
+    <string name="subject_enroll">Inscribir Materia</string>
+    <string name="subject_success_title">¡Qué buena onda! ¡Materia inscrita con éxito!</string>
+    <string name="subject_success_message">¿Quieres aprovechar el impulso y agregar otra?</string>
+    <string name="subject_add_task">Agregar Tarea</string>
+    <string name="subject_finish">Finalizar</string>
+    <string name="subject_my_subjects">Mis materias</string>
+    <string name="subject_no_subjects">Aún no tienes materias inscritas</string>
+    <string name="subject_topics_count">%1$d temas</string>
+    <string name="subject_delete_title">Eliminar materia</string>
+    <string name="subject_delete_message">¿Estás seguro de eliminar esta materia?</string>
+    <string name="subject_btn_delete">Eliminar</string>
+    <string name="subject_error_empty_name">Ingresa el nombre de la asignatura</string>
+    <string name="subject_error_empty_instructor">Ingresa el nombre del instructor</string>
+
 </resources>
