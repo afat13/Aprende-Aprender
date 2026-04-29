@@ -214,7 +214,7 @@ Al seleccionar la opción de aceptación, el usuario declara haber leído, enten
     <string name="task_select_subject">Selecciona una materia</string>
     <string name="task_select_date">Selecciona una fecha</string>
     <string name="task_create_button">Crear Tarea</string>
-    <string name="task_add_button">+ Nueva</string>
+    <string name="task_add_button">Nueva</string>
     <string name="task_section_today">📅 Hoy</string>
     <string name="task_section_all">📋 Todas las tareas</string>
     <string name="task_no_tasks">No tienes tareas aún</string>
@@ -224,5 +224,5 @@ Al seleccionar la opción de aceptación, el usuario declara haber leído, enten
     <string name="task_error_no_subject">Debes seleccionar una materia</string>
     <string name="task_error_empty_title">El título no puede estar vacío</string>
     <string name="task_error_no_date">Debes seleccionar una fecha de entrega</string>
-
+    <string name="task_create_first">+ Crear mi primera tarea</string>
 </resources>

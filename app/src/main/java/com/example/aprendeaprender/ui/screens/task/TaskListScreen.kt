@@ -7,6 +7,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material3.*
@@ -16,11 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aprendeaprender.R
 import com.example.aprendeaprender.data.model.Task
+import com.example.aprendeaprender.ui.components.AppButton
 import com.example.aprendeaprender.ui.theme.*
 import com.example.aprendeaprender.viewmodel.TaskListUiState
 import java.text.SimpleDateFormat
@@ -35,26 +38,20 @@ fun TaskListScreen(
     onBackClick: () -> Unit
 ) {
     var taskToDelete by remember { mutableStateOf<Task?>(null) }
+    val hayTareas = uiState.todasLasTareas.isNotEmpty()
 
     taskToDelete?.let { task ->
         AlertDialog(
             onDismissRequest = { taskToDelete = null },
             containerColor = DarkSurface,
             title = {
-                Text(
-                    stringResource(R.string.task_delete_title),
-                    fontWeight = FontWeight.Bold,
-                    color = TextWhite
-                )
+                Text(stringResource(R.string.task_delete_title), fontWeight = FontWeight.Bold, color = TextWhite)
             },
             text = {
                 Text(stringResource(R.string.task_delete_message), color = TextGray, fontSize = 14.sp)
             },
             confirmButton = {
-                TextButton(onClick = {
-                    onDeleteClick(task.id)
-                    taskToDelete = null
-                }) {
+                TextButton(onClick = { onDeleteClick(task.id); taskToDelete = null }) {
                     Text(stringResource(R.string.subject_btn_delete), color = ErrorRed)
                 }
             },
@@ -66,33 +63,20 @@ fun TaskListScreen(
         )
     }
 
-    Scaffold(containerColor = DarkBackground) { innerPadding ->
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp)
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(DarkBackground)
+            .padding(horizontal = 24.dp)
+    ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // ── Header ──
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            // Header
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = onBackClick) {
-                    Text("‹", fontSize = 32.sp, color = CyanAccent, fontWeight = FontWeight.Bold)
-                }
-
-                TextButton(onClick = onAddTaskClick) {
-                    Text(
-                        text = stringResource(R.string.task_add_button),
-                        color = CyanAccent,
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
-            }
-
             Text(
                 text = stringResource(R.string.task_list_title),
                 fontSize = 26.sp,
@@ -100,60 +84,81 @@ fun TaskListScreen(
                 color = CyanAccent
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            if (uiState.cargando) {
-                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                    CircularProgressIndicator(color = CyanAccent)
+            // Botón Nueva solo aparece cuando hay tareas
+            if (hayTareas) {
+                FilledTonalButton(
+                    onClick = onAddTaskClick,
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = CyanAccent,
+                        contentColor = Color(0xFF0D1B2A)
+                    ),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 14.dp, vertical = 8.dp)
+                ) {
+                    Icon(Icons.Default.Add, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(
+                        text = stringResource(R.string.task_add_button),
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
-            } else {
-                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            }
+        }
 
-                    // ── Sección HOY ──
-                    if (uiState.tareasHoy.isNotEmpty()) {
-                        item {
-                            SectionHeader(title = stringResource(R.string.task_section_today))
-                        }
-                        items(uiState.tareasHoy) { task ->
-                            TaskCard(
-                                task = task,
-                                onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
-                                onDeleteClick = { taskToDelete = task }
-                            )
-                        }
-                        item { Spacer(modifier = Modifier.height(8.dp)) }
-                    }
+        Spacer(modifier = Modifier.height(16.dp))
 
-                    // ── Sección TODAS ──
-                    item {
-                        SectionHeader(title = stringResource(R.string.task_section_all))
-                    }
-
-                    if (uiState.todasLasTareas.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    stringResource(R.string.task_no_tasks),
-                                    color = TextGray,
-                                    fontSize = 16.sp
-                                )
-                            }
-                        }
-                    } else {
-                        items(uiState.todasLasTareas) { task ->
-                            TaskCard(
-                                task = task,
-                                onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
-                                onDeleteClick = { taskToDelete = task }
-                            )
-                        }
-                    }
-
-                    item { Spacer(modifier = Modifier.height(16.dp)) }
+        if (uiState.cargando) {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                CircularProgressIndicator(color = CyanAccent)
+            }
+        } else if (!hayTareas) {
+            // ── Sin tareas: botón grande en el centro ──
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.task_no_tasks),
+                        color = TextGray,
+                        fontSize = 16.sp,
+                        textAlign = TextAlign.Center
+                    )
+                    AppButton(
+                        text = stringResource(R.string.task_create_first),
+                        onClick = onAddTaskClick
+                    )
                 }
+            }
+        } else {
+            LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                // ── HOY ──
+                if (uiState.tareasHoy.isNotEmpty()) {
+                    item { SectionHeader(title = stringResource(R.string.task_section_today)) }
+                    items(uiState.tareasHoy) { task ->
+                        TaskCard(
+                            task = task,
+                            onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
+                            onDeleteClick = { taskToDelete = task }
+                        )
+                    }
+                    item { Spacer(modifier = Modifier.height(8.dp)) }
+                }
+
+                // ── TODAS ──
+                item { SectionHeader(title = stringResource(R.string.task_section_all)) }
+
+                items(uiState.todasLasTareas) { task ->
+                    TaskCard(
+                        task = task,
+                        onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
+                        onDeleteClick = { taskToDelete = task }
+                    )
+                }
+
+                item { Spacer(modifier = Modifier.height(16.dp)) }
             }
         }
     }
@@ -202,20 +207,10 @@ private fun TaskCard(
                         color = if (completada) TextGray else TextWhite,
                         textDecoration = if (completada) TextDecoration.LineThrough else TextDecoration.None
                     )
-                    Text(
-                        text = task.subjectName,
-                        fontSize = 12.sp,
-                        color = CyanAccent
-                    )
+                    Text(text = task.subjectName, fontSize = 12.sp, color = CyanAccent)
                 }
-
                 IconButton(onClick = onDeleteClick, modifier = Modifier.size(32.dp)) {
-                    Icon(
-                        Icons.Default.Delete,
-                        contentDescription = null,
-                        tint = ErrorRed,
-                        modifier = Modifier.size(18.dp)
-                    )
+                    Icon(Icons.Default.Delete, contentDescription = null, tint = ErrorRed, modifier = Modifier.size(18.dp))
                 }
             }
 
@@ -231,14 +226,7 @@ private fun TaskCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Fecha
-                Text(
-                    text = "📅 $fechaTexto",
-                    fontSize = 12.sp,
-                    color = TextGray
-                )
-
-                // Prioridad badge
+                Text(text = "📅 $fechaTexto", fontSize = 12.sp, color = TextGray)
                 Box(
                     modifier = Modifier
                         .border(1.dp, prioridadColor(prioridad), RoundedCornerShape(20.dp))
@@ -255,7 +243,6 @@ private fun TaskCard(
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Estado dropdown
             Box {
                 Box(
                     modifier = Modifier
@@ -265,9 +252,7 @@ private fun TaskCard(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(0.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
@@ -281,12 +266,7 @@ private fun TaskCard(
                             onClick = { showEstadoDropdown = true },
                             modifier = Modifier.size(20.dp)
                         ) {
-                            Icon(
-                                Icons.Default.KeyboardArrowDown,
-                                contentDescription = null,
-                                tint = TextGray,
-                                modifier = Modifier.size(16.dp)
-                            )
+                            Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = TextGray, modifier = Modifier.size(16.dp))
                         }
                     }
                 }
@@ -298,18 +278,8 @@ private fun TaskCard(
                 ) {
                     Task.Estado.values().forEach { e ->
                         DropdownMenuItem(
-                            text = {
-                                Text(
-                                    estadoLabel(e),
-                                    color = estadoColor(e),
-                                    fontWeight = FontWeight.Bold,
-                                    fontSize = 13.sp
-                                )
-                            },
-                            onClick = {
-                                onEstadoChange(e)
-                                showEstadoDropdown = false
-                            }
+                            text = { Text(estadoLabel(e), color = estadoColor(e), fontWeight = FontWeight.Bold, fontSize = 13.sp) },
+                            onClick = { onEstadoChange(e); showEstadoDropdown = false }
                         )
                     }
                 }

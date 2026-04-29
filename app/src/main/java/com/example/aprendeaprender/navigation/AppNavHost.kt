@@ -68,8 +68,8 @@ private val bottomNavRoutes = setOf(
     Routes.PROFILE
 )
 
-// Rutas donde se muestra el FAB de nueva tarea
-private val fabRoutes = setOf(Routes.TASK_LIST)
+// Rutas donde se muestra el FAB
+private val fabRoutes = setOf(Routes.SUBJECT_LIST)
 
 private fun NavHostController.navigateClearingStack(route: String) {
     navigate(route) {
@@ -183,18 +183,23 @@ fun AppNavHost() {
             if (showFab) {
                 FloatingActionButton(
                     onClick = {
-                        taskViewModel.resetCreateForm()
-                        taskViewModel.cargarMaterias()
-                        navController.navigate(Routes.CREATE_TASK) { launchSingleTop = true }
+                        when (currentRoute) {
+                            Routes.TASK_LIST -> {
+                                taskViewModel.resetCreateForm()
+                                taskViewModel.cargarMaterias()
+                                navController.navigate(Routes.CREATE_TASK) { launchSingleTop = true }
+                            }
+                            Routes.SUBJECT_LIST -> {
+                                subjectViewModel.resetCreateForm()
+                                navController.navigate(Routes.CREATE_SUBJECT) { launchSingleTop = true }
+                            }
+                        }
                     },
                     containerColor = CyanAccent,
                     contentColor = Color(0xFF0D1B2A),
                     shape = RoundedCornerShape(16.dp)
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Add,
-                        contentDescription = "Nueva tarea",
-                    )
+                    Icon(imageVector = Icons.Default.Add, contentDescription = "Agregar")
                 }
             }
         }
@@ -363,6 +368,11 @@ fun AppNavHost() {
                     uiState = listUiState,
                     onEstadoChange = taskViewModel::cambiarEstado,
                     onDeleteClick = taskViewModel::eliminarTarea,
+                    onAddTaskClick = {
+                        taskViewModel.resetCreateForm()
+                        taskViewModel.cargarMaterias()
+                        navController.navigate(Routes.CREATE_TASK) { launchSingleTop = true }
+                    },
                     onBackClick = { navController.popBackStack() }
                 )
             }
