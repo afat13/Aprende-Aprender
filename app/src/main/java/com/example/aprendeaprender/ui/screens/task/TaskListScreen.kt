@@ -1,0 +1,319 @@
+package com.example.aprendeaprender.ui.screens.tasks
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.example.aprendeaprender.R
+import com.example.aprendeaprender.data.model.Task
+import com.example.aprendeaprender.ui.theme.*
+import com.example.aprendeaprender.viewmodel.TaskListUiState
+import java.text.SimpleDateFormat
+import java.util.Locale
+
+@Composable
+fun TaskListScreen(
+    uiState: TaskListUiState,
+    onEstadoChange: (String, Task.Estado) -> Unit,
+    onDeleteClick: (String) -> Unit,
+    onAddTaskClick: () -> Unit,
+    onBackClick: () -> Unit
+) {
+    var taskToDelete by remember { mutableStateOf<Task?>(null) }
+
+    taskToDelete?.let { task ->
+        AlertDialog(
+            onDismissRequest = { taskToDelete = null },
+            containerColor = DarkSurface,
+            title = {
+                Text(
+                    stringResource(R.string.task_delete_title),
+                    fontWeight = FontWeight.Bold,
+                    color = TextWhite
+                )
+            },
+            text = {
+                Text(stringResource(R.string.task_delete_message), color = TextGray, fontSize = 14.sp)
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    onDeleteClick(task.id)
+                    taskToDelete = null
+                }) {
+                    Text(stringResource(R.string.subject_btn_delete), color = ErrorRed)
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { taskToDelete = null }) {
+                    Text(stringResource(R.string.profile_btn_cancel), color = TextGray)
+                }
+            }
+        )
+    }
+
+    Scaffold(containerColor = DarkBackground) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(horizontal = 24.dp)
+        ) {
+            // Header
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClick) {
+                    Text("‹", fontSize = 32.sp, color = CyanAccent, fontWeight = FontWeight.Bold)
+                }
+
+                TextButton(onClick = onAddTaskClick) {
+                    Text(
+                        text = stringResource(R.string.task_add_button),
+                        color = CyanAccent,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Text(
+                text = stringResource(R.string.task_list_title),
+                fontSize = 26.sp,
+                fontWeight = FontWeight.Bold,
+                color = CyanAccent
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            if (uiState.cargando) {
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator(color = CyanAccent)
+                }
+            } else {
+                LazyColumn(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+
+                    // ── Sección HOY ──
+                    if (uiState.tareasHoy.isNotEmpty()) {
+                        item {
+                            SectionHeader(title = stringResource(R.string.task_section_today))
+                        }
+                        items(uiState.tareasHoy) { task ->
+                            TaskCard(
+                                task = task,
+                                onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
+                                onDeleteClick = { taskToDelete = task }
+                            )
+                        }
+                        item { Spacer(modifier = Modifier.height(8.dp)) }
+                    }
+
+                    // ── Sección TODAS ──
+                    item {
+                        SectionHeader(title = stringResource(R.string.task_section_all))
+                    }
+
+                    if (uiState.todasLasTareas.isEmpty()) {
+                        item {
+                            Box(
+                                modifier = Modifier.fillMaxWidth().padding(vertical = 32.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text(
+                                    stringResource(R.string.task_no_tasks),
+                                    color = TextGray,
+                                    fontSize = 16.sp
+                                )
+                            }
+                        }
+                    } else {
+                        items(uiState.todasLasTareas) { task ->
+                            TaskCard(
+                                task = task,
+                                onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
+                                onDeleteClick = { taskToDelete = task }
+                            )
+                        }
+                    }
+
+                    item { Spacer(modifier = Modifier.height(16.dp)) }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Text(
+        text = title,
+        fontSize = 16.sp,
+        fontWeight = FontWeight.Bold,
+        color = TextWhite,
+        modifier = Modifier.padding(vertical = 4.dp)
+    )
+}
+
+@Composable
+private fun TaskCard(
+    task: Task,
+    onEstadoChange: (Task.Estado) -> Unit,
+    onDeleteClick: () -> Unit
+) {
+    val sdf = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+    val fechaTexto = if (task.fechaEntrega > 0) sdf.format(task.fechaEntrega) else "—"
+    val prioridad = runCatching { Task.Prioridad.valueOf(task.prioridad) }.getOrDefault(Task.Prioridad.MEDIA)
+    val estado = runCatching { Task.Estado.valueOf(task.estado) }.getOrDefault(Task.Estado.PENDIENTE)
+    val completada = estado == Task.Estado.COMPLETADA
+    var showEstadoDropdown by remember { mutableStateOf(false) }
+
+    Card(
+        colors = CardDefaults.cardColors(containerColor = Color(0xFF1B2A3B)),
+        shape = RoundedCornerShape(16.dp),
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.Top
+            ) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = task.titulo,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = if (completada) TextGray else TextWhite,
+                        textDecoration = if (completada) TextDecoration.LineThrough else TextDecoration.None
+                    )
+                    Text(
+                        text = task.subjectName,
+                        fontSize = 12.sp,
+                        color = CyanAccent
+                    )
+                }
+
+                IconButton(onClick = onDeleteClick, modifier = Modifier.size(32.dp)) {
+                    Icon(
+                        Icons.Default.Delete,
+                        contentDescription = null,
+                        tint = ErrorRed,
+                        modifier = Modifier.size(18.dp)
+                    )
+                }
+            }
+
+            if (task.descripcion.isNotBlank()) {
+                Spacer(modifier = Modifier.height(6.dp))
+                Text(text = task.descripcion, fontSize = 13.sp, color = TextGray)
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Fecha
+                Text(
+                    text = "📅 $fechaTexto",
+                    fontSize = 12.sp,
+                    color = TextGray
+                )
+
+                // Prioridad badge
+                Box(
+                    modifier = Modifier
+                        .border(1.dp, prioridadColor(prioridad), RoundedCornerShape(20.dp))
+                        .padding(horizontal = 8.dp, vertical = 2.dp)
+                ) {
+                    Text(
+                        text = prioridadLabel(prioridad),
+                        fontSize = 11.sp,
+                        color = prioridadColor(prioridad),
+                        fontWeight = FontWeight.Bold
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // Estado dropdown
+            Box {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(1.dp, estadoColor(estado), RoundedCornerShape(8.dp))
+                        .background(DarkBackground, RoundedCornerShape(8.dp))
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(0.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text(
+                            text = estadoLabel(estado),
+                            color = estadoColor(estado),
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                        IconButton(
+                            onClick = { showEstadoDropdown = true },
+                            modifier = Modifier.size(20.dp)
+                        ) {
+                            Icon(
+                                Icons.Default.KeyboardArrowDown,
+                                contentDescription = null,
+                                tint = TextGray,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                    }
+                }
+
+                DropdownMenu(
+                    expanded = showEstadoDropdown,
+                    onDismissRequest = { showEstadoDropdown = false },
+                    modifier = Modifier.background(DarkSurface)
+                ) {
+                    Task.Estado.values().forEach { e ->
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    estadoLabel(e),
+                                    color = estadoColor(e),
+                                    fontWeight = FontWeight.Bold,
+                                    fontSize = 13.sp
+                                )
+                            },
+                            onClick = {
+                                onEstadoChange(e)
+                                showEstadoDropdown = false
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}

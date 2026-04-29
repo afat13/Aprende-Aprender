@@ -203,5 +203,26 @@ Al seleccionar la opción de aceptación, el usuario declara haber leído, enten
     <string name="subject_btn_delete">Eliminar</string>
     <string name="subject_error_empty_name">Ingresa el nombre de la asignatura</string>
     <string name="subject_error_empty_instructor">Ingresa el nombre del instructor</string>
+    <string name="task_new_title">Nueva Tarea</string>
+    <string name="task_list_title">Mis Tareas</string>
+    <string name="task_subject_label">Materia</string>
+    <string name="task_title_label">Título</string>
+    <string name="task_description_label">Descripción</string>
+    <string name="task_due_date_label">Fecha de entrega</string>
+    <string name="task_priority_label">Prioridad</string>
+    <string name="task_status_label">Estado</string>
+    <string name="task_select_subject">Selecciona una materia</string>
+    <string name="task_select_date">Selecciona una fecha</string>
+    <string name="task_create_button">Crear Tarea</string>
+    <string name="task_add_button">+ Nueva</string>
+    <string name="task_section_today">📅 Hoy</string>
+    <string name="task_section_all">📋 Todas las tareas</string>
+    <string name="task_no_tasks">No tienes tareas aún</string>
+    <string name="task_no_subjects">No tienes materias inscritas</string>
+    <string name="task_delete_title">Eliminar tarea</string>
+    <string name="task_delete_message">¿Estás seguro de que deseas eliminar esta tarea?</string>
+    <string name="task_error_no_subject">Debes seleccionar una materia</string>
+    <string name="task_error_empty_title">El título no puede estar vacío</string>
+    <string name="task_error_no_date">Debes seleccionar una fecha de entrega</string>
 
 </resources>
