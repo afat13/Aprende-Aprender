@@ -32,8 +32,8 @@ import java.util.Locale
 @Composable
 fun TaskListScreen(
     uiState: TaskListUiState,
-    onEstadoChange: (String, Task.Estado) -> Unit,
-    onDeleteClick: (String) -> Unit,
+    onEstadoChange: (String, String, Task.Estado) -> Unit,
+    onDeleteClick: (String, String) -> Unit,
     onAddTaskClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -51,7 +51,7 @@ fun TaskListScreen(
                 Text(stringResource(R.string.task_delete_message), color = TextGray, fontSize = 14.sp)
             },
             confirmButton = {
-                TextButton(onClick = { onDeleteClick(task.id); taskToDelete = null }) {
+                TextButton(onClick = { onDeleteClick(task.subjectId, task.id); taskToDelete = null }) {
                     Text(stringResource(R.string.subject_btn_delete), color = ErrorRed)
                 }
             },
@@ -140,7 +140,9 @@ fun TaskListScreen(
                     items(uiState.tareasHoy) { task ->
                         TaskCard(
                             task = task,
-                            onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
+                            onEstadoChange = { estado ->
+                                onEstadoChange(task.subjectId, task.id, estado)
+                            },
                             onDeleteClick = { taskToDelete = task }
                         )
                     }
@@ -153,7 +155,9 @@ fun TaskListScreen(
                 items(uiState.todasLasTareas) { task ->
                     TaskCard(
                         task = task,
-                        onEstadoChange = { estado -> onEstadoChange(task.id, estado) },
+                        onEstadoChange = { estado ->
+                            onEstadoChange(task.subjectId, task.id, estado)
+                        },
                         onDeleteClick = { taskToDelete = task }
                     )
                 }

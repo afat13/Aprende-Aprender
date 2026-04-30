@@ -27,7 +27,6 @@ class TaskViewModel(
     private val _listUiState = MutableStateFlow(TaskListUiState())
     val listUiState: StateFlow<TaskListUiState> = _listUiState.asStateFlow()
 
-    // ── Cargar materias disponibles ──
     fun cargarMaterias() {
         _createUiState.update { it.copy(cargandoMaterias = true) }
         viewModelScope.launch {
@@ -155,10 +154,18 @@ class TaskViewModel(
         }
     }
 
-    fun cambiarEstado(taskId: String, estado: Task.Estado) {
+    fun cambiarEstado(
+        subjectId: String,
+        taskId: String,
+        estado: Task.Estado
+    ) {
         viewModelScope.launch {
             try {
-                taskRepository.updateTaskEstado(taskId, estado)
+                taskRepository.updateTaskEstado(
+                    subjectId = subjectId,
+                    taskId = taskId,
+                    estado = estado
+                )
                 cargarTareas()
             } catch (e: Exception) {
                 android.util.Log.e("TASK_VM", "Error cambiando estado: ${e.message}", e)
@@ -166,10 +173,16 @@ class TaskViewModel(
         }
     }
 
-    fun eliminarTarea(taskId: String) {
+    fun eliminarTarea(
+        subjectId: String,
+        taskId: String
+    ) {
         viewModelScope.launch {
             try {
-                taskRepository.deleteTask(taskId)
+                taskRepository.deleteTask(
+                    subjectId = subjectId,
+                    taskId = taskId
+                )
                 cargarTareas()
             } catch (e: Exception) {
                 android.util.Log.e("TASK_VM", "Error eliminando tarea: ${e.message}", e)

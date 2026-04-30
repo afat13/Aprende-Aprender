@@ -362,18 +362,37 @@ fun AppNavHost() {
 
             // ── Tasks ──
             composable(Routes.TASK_LIST) {
-                val listUiState by taskViewModel.listUiState.collectAsState()
-                LaunchedEffect(Unit) { taskViewModel.cargarTareas() }
+                val taskListUiState by taskViewModel.listUiState.collectAsState()
+
+                LaunchedEffect(Unit) {
+                    taskViewModel.cargarTareas()
+                }
+
                 TaskListScreen(
-                    uiState = listUiState,
-                    onEstadoChange = taskViewModel::cambiarEstado,
-                    onDeleteClick = taskViewModel::eliminarTarea,
+                    uiState = taskListUiState,
+                    onEstadoChange = { subjectId, taskId, estado ->
+                        taskViewModel.cambiarEstado(
+                            subjectId = subjectId,
+                            taskId = taskId,
+                            estado = estado
+                        )
+                    },
+                    onDeleteClick = { subjectId, taskId ->
+                        taskViewModel.eliminarTarea(
+                            subjectId = subjectId,
+                            taskId = taskId
+                        )
+                    },
                     onAddTaskClick = {
                         taskViewModel.resetCreateForm()
                         taskViewModel.cargarMaterias()
-                        navController.navigate(Routes.CREATE_TASK) { launchSingleTop = true }
+                        navController.navigate(Routes.CREATE_TASK) {
+                            launchSingleTop = true
+                        }
                     },
-                    onBackClick = { navController.popBackStack() }
+                    onBackClick = {
+                        navController.popBackStack()
+                    }
                 )
             }
 
