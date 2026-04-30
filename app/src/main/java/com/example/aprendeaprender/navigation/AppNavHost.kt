@@ -1,5 +1,8 @@
 package com.example.aprendeaprender.navigation
-
+import androidx.compose.runtime.DisposableEffect
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -110,7 +113,11 @@ fun AppNavHost() {
     })
     val homeViewModel: HomeViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeViewModel(profileRepository) as T
+        override fun <T : ViewModel> create(modelClass: Class<T>): T =
+            HomeViewModel(
+                profileRepository = profileRepository,
+                taskRepository = taskRepository
+            ) as T
     })
     val subjectViewModel: SubjectViewModel = viewModel(factory = object : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -285,17 +292,45 @@ fun AppNavHost() {
             // ── Home ──
             composable(Routes.HOME) {
                 val homeUiState by homeViewModel.uiState.collectAsState()
-                LaunchedEffect(Unit) { homeViewModel.cargarDatosHome() }
+                val lifecycleOwner = LocalLifecycleOwner.current
+
+                DisposableEffect(lifecycleOwner) {
+                    val observer = LifecycleEventObserver { _, event ->
+                        if (event == Lifecycle.Event.ON_RESUME) {
+                            homeViewModel.cargarDatosHome()
+                        }
+                    }
+
+                    lifecycleOwner.lifecycle.addObserver(observer)
+
+                    onDispose {
+                        lifecycleOwner.lifecycle.removeObserver(observer)
+                    }
+                }
 
                 HomeRoute(
                     uiState = homeUiState,
-                    onNavigateToProfile = { navController.navigate(Routes.PROFILE) { launchSingleTop = true } },
-                    onNavigateToSubjects = { navController.navigate(Routes.SUBJECT_LIST) { launchSingleTop = true } },
-                    onNavigateToTasks = { navController.navigate(Routes.TASK_LIST) { launchSingleTop = true } },
+                    onNavigateToProfile = {
+                        navController.navigate(Routes.PROFILE) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToSubjects = {
+                        navController.navigate(Routes.SUBJECT_LIST) {
+                            launchSingleTop = true
+                        }
+                    },
+                    onNavigateToTasks = {
+                        navController.navigate(Routes.TASK_LIST) {
+                            launchSingleTop = true
+                        }
+                    },
                     onNavigateToChallenges = { },
                     onEnrollSubjectClick = {
                         subjectViewModel.resetCreateForm()
-                        navController.navigate(Routes.CREATE_SUBJECT) { launchSingleTop = true }
+                        navController.navigate(Routes.CREATE_SUBJECT) {
+                            launchSingleTop = true
+                        }
                     }
                 )
             }
