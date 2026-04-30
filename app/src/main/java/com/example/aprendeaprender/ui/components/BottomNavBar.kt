@@ -50,6 +50,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.aprendeaprender.R
 
+enum class BottomNavDestination {
+    HOME,
+    SUBJECTS,
+    TASKS,
+    CHALLENGES,
+    PROFILE
+}
+
+private data class BottomNavItem(
+    val destination: BottomNavDestination,
+    val labelRes: Int,
+    val selectedIcon: ImageVector,
+    val unselectedIcon: ImageVector
+)
+
 private val GlassBackground = Color(0xFF1B2A3B).copy(alpha = 0.65f)
 private val GlassBorder = Color.White.copy(alpha = 0.12f)
 private val TealAccent = Color(0xFF61C9D8)
@@ -57,33 +72,38 @@ private val SubtitleGray = Color(0xFF8899AA)
 
 @Composable
 fun BottomNavBar(
-    selectedIndex: Int,
-    onItemSelected: (Int) -> Unit,
+    selectedDestination: BottomNavDestination,
+    onDestinationSelected: (BottomNavDestination) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val items = listOf(
         BottomNavItem(
-            label = stringResource(R.string.nav_home),
+            destination = BottomNavDestination.HOME,
+            labelRes = R.string.nav_home,
             selectedIcon = Icons.Filled.Home,
             unselectedIcon = Icons.Outlined.Home
         ),
         BottomNavItem(
-            label = stringResource(R.string.nav_subjects),
+            destination = BottomNavDestination.SUBJECTS,
+            labelRes = R.string.nav_subjects,
             selectedIcon = Icons.Filled.MenuBook,
             unselectedIcon = Icons.Outlined.MenuBook
         ),
         BottomNavItem(
-            label = stringResource(R.string.nav_tasks),
+            destination = BottomNavDestination.TASKS,
+            labelRes = R.string.nav_tasks,
             selectedIcon = Icons.Filled.Assignment,
             unselectedIcon = Icons.Outlined.Assignment
         ),
         BottomNavItem(
-            label = stringResource(R.string.nav_challenges),
+            destination = BottomNavDestination.CHALLENGES,
+            labelRes = R.string.nav_challenges,
             selectedIcon = Icons.Filled.EmojiEvents,
             unselectedIcon = Icons.Outlined.EmojiEvents
         ),
         BottomNavItem(
-            label = stringResource(R.string.nav_profile),
+            destination = BottomNavDestination.PROFILE,
+            labelRes = R.string.nav_profile,
             selectedIcon = Icons.Filled.Person,
             unselectedIcon = Icons.Outlined.Person
         )
@@ -93,6 +113,7 @@ fun BottomNavBar(
     val density = LocalDensity.current
     var barWidthPx by remember { mutableIntStateOf(0) }
 
+    val selectedIndex = items.indexOfFirst { it.destination == selectedDestination }.coerceAtLeast(0)
     val itemWidthPx = if (barWidthPx > 0) barWidthPx / items.size else 0
     val targetOffsetPx = selectedIndex * itemWidthPx
 
@@ -144,27 +165,30 @@ fun BottomNavBar(
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            items.forEachIndexed { index, item ->
-                val isSelected = selectedIndex == index
+            items.forEach { item ->
+                val isSelected = item.destination == selectedDestination
+
                 Column(
                     modifier = Modifier
                         .weight(1f)
                         .clickable(
                             interactionSource = remember { MutableInteractionSource() },
                             indication = null
-                        ) { onItemSelected(index) },
+                        ) {
+                            onDestinationSelected(item.destination)
+                        },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.Center
                 ) {
                     Icon(
                         imageVector = if (isSelected) item.selectedIcon else item.unselectedIcon,
-                        contentDescription = item.label,
+                        contentDescription = stringResource(item.labelRes),
                         tint = if (isSelected) TealAccent else SubtitleGray,
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = item.label,
+                        text = stringResource(item.labelRes),
                         color = if (isSelected) TealAccent else SubtitleGray,
                         fontSize = 11.sp
                     )
@@ -173,9 +197,3 @@ fun BottomNavBar(
         }
     }
 }
-
-private data class BottomNavItem(
-    val label: String,
-    val selectedIcon: ImageVector,
-    val unselectedIcon: ImageVector
-)

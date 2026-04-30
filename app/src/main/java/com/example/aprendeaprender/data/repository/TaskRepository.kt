@@ -8,7 +8,6 @@ class TaskRepository(
     private val authService: FirebaseAuthService,
     private val taskService: RealtimeTaskService = RealtimeTaskService()
 ) {
-
     private fun currentUserId(): String {
         return authService.currentUser()?.uid
             ?: throw IllegalStateException("No hay usuario autenticado.")
@@ -34,7 +33,6 @@ class TaskRepository(
             estado = estado.name,
             createdAt = System.currentTimeMillis()
         )
-
         return taskService.createTask(task)
     }
 
@@ -42,27 +40,11 @@ class TaskRepository(
         return taskService.getTasksByUser(currentUserId())
     }
 
-    suspend fun updateTaskEstado(
-        subjectId: String,
-        taskId: String,
-        estado: Task.Estado
-    ) {
-        taskService.updateTaskEstado(
-            userId = currentUserId(),
-            subjectId = subjectId,
-            taskId = taskId,
-            estado = estado.name
-        )
+    suspend fun updateTaskEstado(taskId: String, estado: Task.Estado) {
+        taskService.updateTaskEstado(currentUserId(), taskId, estado.name)
     }
 
-    suspend fun deleteTask(
-        subjectId: String,
-        taskId: String
-    ) {
-        taskService.deleteTask(
-            userId = currentUserId(),
-            subjectId = subjectId,
-            taskId = taskId
-        )
+    suspend fun deleteTask(taskId: String) {
+        taskService.deleteTask(currentUserId(), taskId)
     }
 }
