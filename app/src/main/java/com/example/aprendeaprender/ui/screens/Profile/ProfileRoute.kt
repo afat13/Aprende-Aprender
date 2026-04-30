@@ -9,7 +9,8 @@ import com.example.aprendeaprender.viewmodel.ProfileViewModel
 @Composable
 fun ProfileRoute(
     viewModel: ProfileViewModel,
-    onBackClick: () -> Unit = {}
+    onBackClick: () -> Unit = {},
+    onCerrarSesionClick: () -> Unit = {}
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -23,6 +24,7 @@ fun ProfileRoute(
         onApellidoChange = viewModel::onApellidoChange,
         onTelefonoChange = viewModel::onTelefonoChange,
         onGuardarClick = viewModel::guardarPerfil,
+        onCerrarSesionClick = onCerrarSesionClick,
         onBackClick = onBackClick
     )
 }

@@ -172,4 +172,57 @@ Al seleccionar la opción de aceptación, el usuario declara haber leído, enten
     <string name="nav_challenges">Retos</string>
     <string name="nav_profile">Perfil</string>
 
+    <!-- Profile -->
+    <string name="profile_logout_title">Cerrar sesión</string>
+    <string name="profile_logout_message">¿Quieres cerrar la sesión en este dispositivo?</string>
+    <string name="profile_btn_logout">Cerrar sesión</string>
+    <string name="profile_btn_cancel">Cancelar</string>
+    <string name="profile_btn_edit">Editar perfil</string>
+    <string name="profile_btn_save">Guardar cambios</string>
+    <string name="profile_cd_photo">Foto de perfil</string>
+
+    <!-- Subjects -->
+    <string name="subject_new_title">Nueva Materia</string>
+    <string name="subject_data_header">Datos de asignatura</string>
+    <string name="subject_name_label">asignatura</string>
+    <string name="subject_instructor_label">Instructor</string>
+    <string name="subject_topics_header">cuales temas voy a ver ?</string>
+    <string name="subject_topic_label">Tema %1$d</string>
+    <string name="subject_add_topic">un tema adicional ?</string>
+    <string name="subject_save_topics">Guardar Temas</string>
+    <string name="subject_enroll">Inscribir Materia</string>
+    <string name="subject_success_title">¡Qué buena onda! ¡Materia inscrita con éxito!</string>
+    <string name="subject_success_message">¿Quieres aprovechar el impulso y agregar otra?</string>
+    <string name="subject_add_task">Agregar Tarea</string>
+    <string name="subject_finish">Finalizar</string>
+    <string name="subject_my_subjects">Mis materias</string>
+    <string name="subject_no_subjects">Aún no tienes materias inscritas</string>
+    <string name="subject_topics_count">%1$d temas</string>
+    <string name="subject_delete_title">Eliminar materia</string>
+    <string name="subject_delete_message">¿Estás seguro de eliminar esta materia?</string>
+    <string name="subject_btn_delete">Eliminar</string>
+    <string name="subject_error_empty_name">Ingresa el nombre de la asignatura</string>
+    <string name="subject_error_empty_instructor">Ingresa el nombre del instructor</string>
+    <string name="task_new_title">Nueva Tarea</string>
+    <string name="task_list_title">Mis Tareas</string>
+    <string name="task_subject_label">Materia</string>
+    <string name="task_title_label">Título</string>
+    <string name="task_description_label">Descripción</string>
+    <string name="task_due_date_label">Fecha de entrega</string>
+    <string name="task_priority_label">Prioridad</string>
+    <string name="task_status_label">Estado</string>
+    <string name="task_select_subject">Selecciona una materia</string>
+    <string name="task_select_date">Selecciona una fecha</string>
+    <string name="task_create_button">Crear Tarea</string>
+    <string name="task_add_button">Nueva</string>
+    <string name="task_section_today">📅 Hoy</string>
+    <string name="task_section_all">📋 Todas las tareas</string>
+    <string name="task_no_tasks">No tienes tareas aún</string>
+    <string name="task_no_subjects">No tienes materias inscritas</string>
+    <string name="task_delete_title">Eliminar tarea</string>
+    <string name="task_delete_message">¿Estás seguro de que deseas eliminar esta tarea?</string>
+    <string name="task_error_no_subject">Debes seleccionar una materia</string>
+    <string name="task_error_empty_title">El título no puede estar vacío</string>
+    <string name="task_error_no_date">Debes seleccionar una fecha de entrega</string>
+    <string name="task_create_first">+ Crear mi primera tarea</string>
 </resources>

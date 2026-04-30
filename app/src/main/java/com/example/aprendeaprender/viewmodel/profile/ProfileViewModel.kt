@@ -59,6 +59,7 @@ class ProfileViewModel(
 
             try {
                 val profile = repository.getProfile()
+                android.util.Log.d("PERFIL", "uid=${profile.uid}, email=${profile.email}, nombre=${profile.nombre}, apellido=${profile.apellido}")
 
                 _uiState.update {
                     it.copy(
@@ -70,6 +71,7 @@ class ProfileViewModel(
                     )
                 }
             } catch (e: Exception) {
+                android.util.Log.e("PERFIL", "Error cargando perfil", e)
                 _uiState.update {
                     it.copy(
                         cargando = false,

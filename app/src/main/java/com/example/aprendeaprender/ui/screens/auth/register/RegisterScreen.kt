@@ -1,24 +1,14 @@
 package com.example.aprendeaprender.ui.screens.auth.register
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -69,9 +59,7 @@ fun RegisterScreen(
                 onAcceptedTermsChange(true)
                 showTermsDialog = false
             },
-            onDismiss = {
-                showTermsDialog = false
-            }
+            onDismiss = { showTermsDialog = false }
         )
     }
 
@@ -79,6 +67,8 @@ fun RegisterScreen(
         modifier = Modifier
             .fillMaxSize()
             .background(DarkBackground)
+            .statusBarsPadding()
+            .navigationBarsPadding()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 28.dp, vertical = 24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -170,57 +160,31 @@ fun RegisterScreen(
 
             Spacer(modifier = Modifier.height(10.dp))
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Checkbox(
                     checked = acceptedTerms,
                     onCheckedChange = onAcceptedTermsChange,
                     enabled = !isLoading
                 )
-
-                TextButton(
-                    onClick = {
-                        showTermsDialog = true
-                    },
-                    enabled = !isLoading
-                ) {
-                    Text(
-                        text = stringResource(id = R.string.accept_terms_label),
-                        color = TextWhite
-                    )
+                TextButton(onClick = { showTermsDialog = true }, enabled = !isLoading) {
+                    Text(text = stringResource(id = R.string.accept_terms_label), color = TextWhite)
                 }
             }
 
-            TextButton(
-                onClick = {
-                    showTermsDialog = true
-                },
-                enabled = !isLoading
-            ) {
-                Text(
-                    text = stringResource(id = R.string.view_terms_label),
-                    color = CyanAccent
-                )
+            TextButton(onClick = { showTermsDialog = true }, enabled = !isLoading) {
+                Text(text = stringResource(id = R.string.view_terms_label), color = CyanAccent)
             }
 
             errorResId?.let { resId ->
                 Spacer(modifier = Modifier.height(8.dp))
-                Text(
-                    text = stringResource(id = resId),
-                    color = ErrorRed,
-                    fontSize = 13.sp
-                )
+                Text(text = stringResource(id = resId), color = ErrorRed, fontSize = 13.sp)
             }
 
             Spacer(modifier = Modifier.height(18.dp))
 
             AppButton(
-                text = if (isLoading) {
-                    stringResource(id = R.string.common_loading)
-                } else {
-                    stringResource(id = R.string.register_button)
-                },
+                text = if (isLoading) stringResource(id = R.string.common_loading)
+                else stringResource(id = R.string.register_button),
                 onClick = onRegisterClick,
                 enabled = !isLoading
             )
@@ -239,10 +203,7 @@ fun RegisterScreen(
                 enabled = !isLoading,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             ) {
-                Text(
-                    text = stringResource(id = R.string.back_to_login),
-                    color = CyanAccent
-                )
+                Text(text = stringResource(id = R.string.back_to_login), color = CyanAccent)
             }
         }
     }

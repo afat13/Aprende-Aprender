@@ -6,17 +6,18 @@ import com.example.aprendeaprender.data.remote.FirestoreUserService
 
 class ProfileRepository(
     private val authService: FirebaseAuthService,
-    private val firestoreUserService: FirestoreUserService
+    private val userService: FirestoreUserService = FirestoreUserService()
 ) {
 
-    suspend fun getProfile(): UserProfile {
-        val user = authService.currentUser()
+    private fun currentUserId(): String {
+        return authService.currentUser()?.uid
             ?: throw IllegalStateException("No hay usuario autenticado.")
+    }
 
-        return firestoreUserService.getUserProfile(
-            uid = user.uid,
-            fallbackEmail = user.email.orEmpty()
-        )
+    suspend fun getProfile(): UserProfile {
+        val uid = currentUserId()
+        val email = authService.currentUser()?.email.orEmpty()
+        return userService.getUserProfile(uid, email)
     }
 
     suspend fun updateProfile(
@@ -24,22 +25,19 @@ class ProfileRepository(
         apellido: String,
         telefono: String
     ) {
-        val user = authService.currentUser()
-            ?: throw IllegalStateException("No hay usuario autenticado.")
-
-        val currentProfile = firestoreUserService.getUserProfile(
-            uid = user.uid,
-            fallbackEmail = user.email.orEmpty()
+        val uid = currentUserId()
+        val email = authService.currentUser()?.email.orEmpty()
+        val profile = UserProfile(
+            uid = uid,
+            email = email,
+            nombre = nombre,
+            apellido = apellido,
+            telefono = telefono
         )
+        userService.saveUserProfile(profile)
+    }
 
-        val updatedProfile = currentProfile.copy(
-            uid = user.uid,
-            email = user.email.orEmpty(),
-            nombre = nombre.trim(),
-            apellido = apellido.trim(),
-            telefono = telefono.trim()
-        )
-
-        firestoreUserService.saveUserProfile(updatedProfile)
+    suspend fun createUserProfile(profile: UserProfile) {
+        userService.createUserProfile(profile)
     }
 }

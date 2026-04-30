@@ -2,7 +2,6 @@ package com.example.aprendeaprender.ui.screens.home
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.example.aprendeaprender.ui.components.BottomNavDestination
 
 @Composable
 fun HomeRoute(
@@ -16,16 +15,6 @@ fun HomeRoute(
 ) {
     HomeScreen(
         uiState = uiState,
-        selectedBottomNav = BottomNavDestination.HOME,
-        onBottomNavSelected = { destination ->
-            when (destination) {
-                BottomNavDestination.HOME -> Unit
-                BottomNavDestination.SUBJECTS -> onNavigateToSubjects()
-                BottomNavDestination.TASKS -> onNavigateToTasks()
-                BottomNavDestination.CHALLENGES -> onNavigateToChallenges()
-                BottomNavDestination.PROFILE -> onNavigateToProfile()
-            }
-        },
         onSubjectsClick = onNavigateToSubjects,
         onTasksTodayClick = onNavigateToTasks,
         onEnrollSubjectClick = onEnrollSubjectClick,
